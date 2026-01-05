@@ -31,7 +31,9 @@ import PDFPreview from "./PDFPreview"
 export default function TravelItineraryForm() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({})
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({})
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
 
   const [formData, setFormData] = useState<ItineraryData>({
@@ -49,24 +51,27 @@ export default function TravelItineraryForm() {
       {
         dayNumber: 1,
         title: "Arrive Cairo, Egypt",
-        activities: "Arrive at Cairo International Airport. Meet and greet by our representative. Transfer to hotel. Evening visit to Khan El Khalili bazaar for shopping and dinner at traditional restaurant.",
+        activities:
+          "Arrive at Cairo International Airport. Meet and greet by our representative. Transfer to hotel. Evening visit to Khan El Khalili bazaar for shopping and dinner at traditional restaurant.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA"
+        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
       },
       {
         dayNumber: 2,
         title: "Pyramids of Giza Tour",
-        activities: "Full day tour of the Giza Pyramids, Sphinx, and Egyptian Museum. Enjoy a traditional Egyptian lunch. Camel ride at sunset near the pyramids. Return to hotel for dinner.",
+        activities:
+          "Full day tour of the Giza Pyramids, Sphinx, and Egyptian Museum. Enjoy a traditional Egyptian lunch. Camel ride at sunset near the pyramids. Return to hotel for dinner.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA"
+        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
       },
       {
         dayNumber: 3,
         title: "Luxor Day Trip",
-        activities: "Early morning flight to Luxor. Visit Valley of the Kings, Karnak Temple, and Temple of Hatshepsut. Lunch at Nile-side restaurant. Evening return flight to Cairo.",
+        activities:
+          "Early morning flight to Luxor. Visit Valley of the Kings, Karnak Temple, and Temple of Hatshepsut. Lunch at Nile-side restaurant. Evening return flight to Cairo.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA"
-      }
+        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
+      },
     ],
 
     // Flights
@@ -76,31 +81,31 @@ export default function TravelItineraryForm() {
         departure: {
           airport: "Dubai",
           date: "2024-03-15",
-          time: "07:30"
+          time: "07:30",
         },
         arrival: {
           airport: "Cairo",
           date: "2024-03-15",
-          time: "10:45"
+          time: "10:45",
         },
         duration: "4h 15m",
-        cabin: "Economy"
+        cabin: "Economy",
       },
       {
         flightNumber: "MS 961",
         departure: {
           airport: "Cairo",
           date: "2024-03-22",
-          time: "18:30"
+          time: "18:30",
         },
         arrival: {
           airport: "Dubai",
           date: "2024-03-22",
-          time: "23:45"
+          time: "23:45",
         },
         duration: "3h 15m",
-        cabin: "Economy"
-      }
+        cabin: "Economy",
+      },
     ],
 
     // Hotels
@@ -112,21 +117,21 @@ export default function TravelItineraryForm() {
         numberOfRooms: "2",
         mealPlan: "Breakfast Included",
         roomCategory: "5-Star Luxury - Deluxe Nile View",
-        images: []
-      }
+        images: [],
+      },
     ],
 
     // Inclusions and exclusions (now arrays)
     inclusions: [
       "All activities shown in itinerary including Giza pyramids visit, Cairo seafood tour",
       "All activities shown in itinerary including Giza pyramids visit, Cairo seafood tour",
-      "All activities shown in itinerary including Giza pyramids visit & pyramids Sphinx tour the life"
+      "All activities shown in itinerary including Giza pyramids visit & pyramids Sphinx tour the life",
     ],
     exclusions: [
       "Personal expenses and gratuities",
       "Travel insurance",
       "Visa fees",
-      "Optional activities not mentioned in itinerary"
+      "Optional activities not mentioned in itinerary",
     ],
 
     // Pricing
@@ -149,14 +154,19 @@ export default function TravelItineraryForm() {
 
     // Terms
     terms: {
-      cancellationPolicy: "Free cancellation up to 14 days before departure. 50% charge for cancellations 7-14 days before. No refund for cancellations within 7 days of departure.",
-      paymentTerms: "50% deposit required at booking. Final payment due 30 days before departure. Payment accepted via bank transfer or credit card.",
-      travelInsurance: "Travel insurance is strongly recommended and can be arranged through our partner providers. Coverage should include trip cancellation, medical emergencies, and baggage loss.",
-      liabilityDisclaimer: "The company acts only as an agent for the hotels, airlines, and other service providers and is not liable for any loss, injury, or damage to person or property. Travelers are responsible for obtaining necessary travel documents and insurance.",
+      cancellationPolicy:
+        "Free cancellation up to 14 days before departure. 50% charge for cancellations 7-14 days before. No refund for cancellations within 7 days of departure.",
+      paymentTerms:
+        "50% deposit required at booking. Final payment due 30 days before departure. Payment accepted via bank transfer or credit card.",
+      travelInsurance:
+        "Travel insurance is strongly recommended and can be arranged through our partner providers. Coverage should include trip cancellation, medical emergencies, and baggage loss.",
+      liabilityDisclaimer:
+        "The company acts only as an agent for the hotels, airlines, and other service providers and is not liable for any loss, injury, or damage to person or property. Travelers are responsible for obtaining necessary travel documents and insurance.",
     },
 
     // Contact information
-    contactInfo: "Email: info@theluxetrails.com | Phone: +971 4 123 4567 | Website: www.theluxetrails.com | Address: Dubai, UAE",
+    contactInfo:
+      "Email: info@theluxetrails.com | Phone: +971 4 123 4567 | Website: www.theluxetrails.com | Address: Dubai, UAE",
 
     // Branding
     companyName: "THE LUXE TRAILS",
@@ -167,7 +177,7 @@ export default function TravelItineraryForm() {
       "Expert local guides with 10+ years experience",
       "Luxury accommodations in prime locations",
       "24/7 customer support throughout your journey",
-      "Carefully curated authentic experiences"
+      "Carefully curated authentic experiences",
     ],
     basicDetails: {
       duration: "8 Days / 7 Nights",
@@ -175,14 +185,14 @@ export default function TravelItineraryForm() {
       destinations: "Cairo, Luxor, Egypt",
       guide: "Professional Guide",
       accommodation: "5-Star Hotels",
-      visaRequired: "Required"
+      visaRequired: "Required",
     },
     tourHighlights: [
       "Visit the iconic Pyramids of Giza and the Great Sphinx",
       "Explore the ancient treasures at the Egyptian Museum",
       "Discover the Valley of the Kings in Luxor",
       "Experience authentic Egyptian cuisine and culture",
-      "Shop at traditional bazaars and markets"
+      "Shop at traditional bazaars and markets",
     ],
   })
 
@@ -222,13 +232,16 @@ export default function TravelItineraryForm() {
     setFormData({ ...formData, whyChooseUs })
   }
 
-  const handleBasicDetailsChange = (field: keyof BasicDetails, value: string) => {
+  const handleBasicDetailsChange = (
+    field: keyof BasicDetails,
+    value: string
+  ) => {
     setFormData({
       ...formData,
       basicDetails: {
         ...formData.basicDetails,
-        [field]: value
-      }
+        [field]: value,
+      },
     })
   }
 
@@ -297,8 +310,14 @@ export default function TravelItineraryForm() {
   ) => {
     // Convert string values to numbers for numeric fields
     let processedValue: string | number = value
-    if (field === "subtotal" || field === "taxes" || field === "fees" || field === "total") {
-      processedValue = typeof value === "string" ? parseFloat(value) || 0 : value
+    if (
+      field === "subtotal" ||
+      field === "taxes" ||
+      field === "fees" ||
+      field === "total"
+    ) {
+      processedValue =
+        typeof value === "string" ? parseFloat(value) || 0 : value
     }
 
     const updatedPricing = { ...formData.pricing, [field]: processedValue }
@@ -310,13 +329,9 @@ export default function TravelItineraryForm() {
           ? (processedValue as number)
           : formData.pricing.subtotal
       const taxes =
-        field === "taxes"
-          ? (processedValue as number)
-          : formData.pricing.taxes
+        field === "taxes" ? (processedValue as number) : formData.pricing.taxes
       const fees =
-        field === "fees"
-          ? (processedValue as number)
-          : formData.pricing.fees
+        field === "fees" ? (processedValue as number) : formData.pricing.fees
       updatedPricing.total = subtotal + taxes + fees
     }
 
@@ -363,7 +378,7 @@ export default function TravelItineraryForm() {
         const errorData = await response.json()
 
         // If validation errors, store them separately
-        if (errorData.details && typeof errorData.details === 'object') {
+        if (errorData.details && typeof errorData.details === "object") {
           setValidationErrors(errorData.details)
           setError("Please fix the validation errors below")
         } else {
@@ -485,7 +500,9 @@ export default function TravelItineraryForm() {
             />
             <CharacterLimitInput
               value={formData.basicDetails?.destinations || ""}
-              onChange={(value) => handleBasicDetailsChange("destinations", value)}
+              onChange={(value) =>
+                handleBasicDetailsChange("destinations", value)
+              }
               label="Destinations"
               characterLimit={100}
               placeholder="e.g., Cairo, Luxor, Egypt"
@@ -501,7 +518,9 @@ export default function TravelItineraryForm() {
             />
             <CharacterLimitInput
               value={formData.basicDetails?.accommodation || ""}
-              onChange={(value) => handleBasicDetailsChange("accommodation", value)}
+              onChange={(value) =>
+                handleBasicDetailsChange("accommodation", value)
+              }
               label="Accommodation"
               characterLimit={100}
               placeholder="e.g., 5-Star Hotels"
@@ -509,7 +528,9 @@ export default function TravelItineraryForm() {
             />
             <CharacterLimitInput
               value={formData.basicDetails?.visaRequired || ""}
-              onChange={(value) => handleBasicDetailsChange("visaRequired", value)}
+              onChange={(value) =>
+                handleBasicDetailsChange("visaRequired", value)
+              }
               label="Visa Required"
               characterLimit={50}
               placeholder="e.g., Required / Not Required"
@@ -800,7 +821,7 @@ export default function TravelItineraryForm() {
               text-white
             `}
           >
-            {isGenerating ? "Generating PDF..." : "Generate Luxury PDF"}
+            {isGenerating ? "Generating PDF..." : "Generate PDF"}
           </button>
         </div>
       </form>

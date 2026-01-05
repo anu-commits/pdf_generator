@@ -134,7 +134,7 @@ export function renderItineraryDay(
   const dayTextWidth = fonts.bodyBold.widthOfTextAtSize(dayText, 9)
   page.drawText(dayText, {
     x: barX + (barWidth - dayTextWidth) / 3, // Center text on bar
-    y: barY + 3, // Vertically center on 15px bar
+    y: barY + 7, // Vertically center on 15px bar
     size: 9,
     font: fonts.bodyBold,
     color: LUXURY_COLORS.white,

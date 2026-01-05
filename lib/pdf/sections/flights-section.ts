@@ -39,7 +39,7 @@ export function renderFlightsSection(
     color: LUXURY_COLORS.gold
   });
 
-  currentY -= 70;
+  currentY -= 30;
 
   if (flights.length === 0) {
     page.drawText('No flights added', {

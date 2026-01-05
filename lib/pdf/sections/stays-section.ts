@@ -112,7 +112,6 @@ function renderHotelCard(
 ): void {
   const cardWidth = HOTEL_CARD_STYLES.width;
   const cardHeight = HOTEL_CARD_STYLES.height;
-  const imageHeight = HOTEL_CARD_STYLES.image.height;
   const infoHeight = HOTEL_CARD_STYLES.infoSection.height;
 
   // Draw card border
@@ -128,24 +127,27 @@ function renderHotelCard(
     }
   );
 
-  // Draw hotel image (top part)
+  // Calculate the actual image height needed to fill the card
+  const actualImageHeight = cardHeight - infoHeight;
+
+  // Draw hotel image (top part) - positioned at the top of the card
   if (image) {
     drawImage(
       page,
       image,
       x,
-      y - imageHeight,
+      y - actualImageHeight,
       cardWidth,
-      imageHeight
+      actualImageHeight
     );
   } else {
     // Placeholder for missing image
     drawRectangle(
       page,
       x,
-      y - imageHeight,
+      y - actualImageHeight,
       cardWidth,
-      imageHeight,
+      actualImageHeight,
       {
         fillColor: LUXURY_COLORS.lightBackground
       }
@@ -153,7 +155,7 @@ function renderHotelCard(
 
     page.drawText('No Image', {
       x: x + cardWidth / 2 - 30,
-      y: y - imageHeight / 2,
+      y: y - actualImageHeight / 2,
       size: LUXURY_FONT_SIZES.body,
       font: fonts.bodyItalic,
       color: LUXURY_COLORS.textMuted
