@@ -6,7 +6,7 @@
  * All values are extracted from the custom design images provided.
  */
 
-import { rgb } from 'pdf-lib';
+import { RGB, rgb } from 'pdf-lib';
 
 /**
  * Color palette for luxury design
@@ -441,11 +441,7 @@ export const BRANDING_STYLES = {
  * Helper function to create semi-transparent overlay for text on images
  */
 export function createOverlayColor(baseColor: RGB, opacity: number): RGB {
-  return {
-    r: baseColor.r * opacity,
-    g: baseColor.g * opacity,
-    b: baseColor.b * opacity,
-  };
+  return rgb(baseColor.red * opacity, baseColor.green * opacity, baseColor.blue * opacity);
 }
 
 /**
@@ -453,7 +449,7 @@ export function createOverlayColor(baseColor: RGB, opacity: number): RGB {
  */
 export function getContrastingTextColor(backgroundColor: RGB): RGB {
   // Calculate relative luminance
-  const luminance = 0.2126 * backgroundColor.r + 0.7152 * backgroundColor.g + 0.0722 * backgroundColor.b;
+  const luminance = 0.2126 * backgroundColor.red + 0.7152 * backgroundColor.green + 0.0722 * backgroundColor.blue;
 
   // Return white for dark backgrounds, dark for light backgrounds
   return luminance > 0.5 ? LUXURY_COLORS.textDark : LUXURY_COLORS.white;
