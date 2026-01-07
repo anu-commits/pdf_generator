@@ -14,6 +14,7 @@ export interface TermsSectionOptions {
   startY: number;
   maxWidth: number;
   terms: string[];
+  textColor?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ export function renderTermsSection(
   fonts: FontFamily,
   options: TermsSectionOptions
 ): number {
-  const { startX, startY, maxWidth, terms } = options;
+  const { startX, startY, maxWidth, terms, textColor = LUXURY_COLORS.textDark } = options;
 
   let currentY = startY;
 
@@ -52,7 +53,7 @@ export function renderTermsSection(
       12, // 12px from Figma
       {
         bulletColor: LUXURY_COLORS.gold, // Golden brown bullets
-        textColor: LUXURY_COLORS.textDark,
+        textColor: textColor,
         bulletSize: 8, // Larger bullets to match design
         bulletIndent: 30, // 30px indent from bullet to text
         lineHeight: 1.64, // Line height from Figma

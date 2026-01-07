@@ -13,6 +13,7 @@ export interface BankDetailsSectionOptions {
   startX: number;
   startY: number;
   bankDetails: BankDetails;
+  textColor?: any;
 }
 
 /**
@@ -24,10 +25,10 @@ export function renderBankDetailsSection(
   fonts: FontFamily,
   options: BankDetailsSectionOptions
 ): number {
-  const { startX, startY, bankDetails } = options;
+  const { startX, startY, bankDetails, textColor = LUXURY_COLORS.textDark } = options;
 
-  const sectionWidth = 400;
-  const rowHeight = 30;
+  const sectionWidth = 412; // Matching the design width
+  const rowHeight = 35; // Slightly taller rows
 
   let currentY = startY;
 
@@ -65,34 +66,37 @@ export function renderBankDetailsSection(
     rows.push({ label: 'IBAN', value: bankDetails.iban });
   }
 
-  // Draw gray rows
-  rows.forEach((row) => {
+  // Draw gray rows with alternating colors
+  rows.forEach((row, index) => {
+    // Alternating gray colors - darker and lighter
+    const rowColor = index % 2 === 0 ? rgb(0.85, 0.85, 0.85) : rgb(0.95, 0.95, 0.95);
+
     // Draw row background
     page.drawRectangle({
       x: startX,
       y: currentY - rowHeight,
       width: sectionWidth,
       height: rowHeight,
-      color: rgb(0.95, 0.95, 0.95)
+      color: rowColor
     });
 
     // Draw label
     page.drawText(row.label, {
-      x: startX + 15,
-      y: currentY - rowHeight / 2 - 4,
-      size: 10,
+      x: startX + 20,
+      y: currentY - rowHeight / 2 - 5,
+      size: 11,
       font: fonts.body,
-      color: LUXURY_COLORS.textDark
+      color: textColor
     });
 
     // Draw value (right-aligned)
-    const valueWidth = fonts.bodyBold.widthOfTextAtSize(row.value, 10);
+    const valueWidth = fonts.bodyBold.widthOfTextAtSize(row.value, 11);
     page.drawText(row.value, {
-      x: startX + sectionWidth - 15 - valueWidth,
-      y: currentY - rowHeight / 2 - 4,
-      size: 10,
+      x: startX + sectionWidth - 20 - valueWidth,
+      y: currentY - rowHeight / 2 - 5,
+      size: 11,
       font: fonts.bodyBold,
-      color: LUXURY_COLORS.textDark
+      color: textColor
     });
 
     currentY -= rowHeight;

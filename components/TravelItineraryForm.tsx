@@ -35,6 +35,7 @@ export default function TravelItineraryForm() {
     Record<string, string>
   >({})
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
+  const [darkMode, setDarkMode] = useState(true) // PDF dark mode toggle
 
   const [formData, setFormData] = useState<ItineraryData>({
     // Client Information
@@ -371,7 +372,10 @@ export default function TravelItineraryForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ itineraryData: formData }),
+        body: JSON.stringify({
+          itineraryData: formData,
+          darkMode: darkMode
+        }),
       })
 
       if (!response.ok) {
@@ -804,6 +808,29 @@ export default function TravelItineraryForm() {
             placeholder="Phone, email, website, address, etc."
             required={true}
           />
+        </section>
+
+        {/* Dark Mode Toggle */}
+        <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+            PDF Theme
+          </h2>
+          <div className="flex items-center gap-4">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={darkMode}
+                onChange={(e) => setDarkMode(e.target.checked)}
+                className="w-5 h-5 text-amber-600 border-gray-300 rounded focus:ring-amber-500"
+              />
+              <span className="text-gray-700 font-medium">
+                Dark Mode Background
+              </span>
+            </label>
+            <span className="text-sm text-gray-500">
+              {darkMode ? "(Black background with white text)" : "(White background with dark text)"}
+            </span>
+          </div>
         </section>
 
         {/* Submit Button */}

@@ -109,7 +109,8 @@ export function renderItineraryDay(
   y: number,
   maxWidth: number,
   drawVerticalLine: boolean = true, // Whether to draw vertical line (for backwards compatibility)
-  isLastDay: boolean = false
+  isLastDay: boolean = false,
+  textColor: any = LUXURY_COLORS.textDark // Default text color
 ): { currentY: number; goldBarY: number } {
   let currentY = y
 
@@ -163,7 +164,7 @@ export function renderItineraryDay(
     y: leftY,
     size: 10, // Updated to 10px from Figma
     font: fonts.bodyBold,
-    color: LUXURY_COLORS.textDark,
+    color: textColor,
   })
 
   leftY -= 20 // Space below title
@@ -179,7 +180,7 @@ export function renderItineraryDay(
       fonts.body,
       10, // Updated to 10px from Figma
       {
-        color: LUXURY_COLORS.textDark,
+        color: textColor,
         lineHeight: 1.99, // Updated to 1.99 from Figma
       }
     )
@@ -194,7 +195,7 @@ export function renderItineraryDay(
       y: leftY,
       size: 10, // Updated to 10px from Figma
       font: fonts.bodyBold,
-      color: LUXURY_COLORS.textDark,
+      color: textColor,
     })
     leftY -= 15
   }

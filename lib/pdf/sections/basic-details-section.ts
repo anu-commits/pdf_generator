@@ -14,6 +14,7 @@ export interface BasicDetailsSectionOptions {
   startY: number;
   maxWidth: number;
   basicDetails: BasicDetails;
+  textColor?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ export function renderBasicDetailsSection(
   fonts: FontFamily,
   options: BasicDetailsSectionOptions
 ): number {
-  const { startX, startY, maxWidth, basicDetails } = options;
+  const { startX, startY, maxWidth, basicDetails, textColor = LUXURY_COLORS.textDark } = options;
 
   let currentY = startY;
 
@@ -99,7 +100,7 @@ export function renderBasicDetailsSection(
         y: boxY + boxSize / 2,
         size: 9,
         font: fonts.body,
-        color: LUXURY_COLORS.textDark
+        color: textColor
       });
 
       boxIndex++;

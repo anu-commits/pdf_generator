@@ -14,6 +14,7 @@ export interface TourHighlightsSectionOptions {
   startY: number;
   maxWidth: number;
   highlights: string[];
+  textColor?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ export function renderTourHighlightsSection(
   fonts: FontFamily,
   options: TourHighlightsSectionOptions
 ): number {
-  const { startX, startY, maxWidth, highlights } = options;
+  const { startX, startY, maxWidth, highlights, textColor = LUXURY_COLORS.textDark } = options;
 
   let currentY = startY;
 
@@ -52,7 +53,7 @@ export function renderTourHighlightsSection(
       LUXURY_FONT_SIZES.body,
       {
         bulletColor: LUXURY_COLORS.gold,
-        textColor: LUXURY_COLORS.textDark,
+        textColor: textColor,
         bulletSize: 6,
         bulletIndent: 15,
         lineHeight: 1.5,

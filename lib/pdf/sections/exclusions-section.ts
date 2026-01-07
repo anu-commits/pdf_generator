@@ -14,6 +14,7 @@ export interface ExclusionsSectionOptions {
   startY: number;
   maxWidth: number;
   exclusions: string[];
+  textColor?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ export function renderExclusionsSection(
   fonts: FontFamily,
   options: ExclusionsSectionOptions
 ): number {
-  const { startX, startY, maxWidth, exclusions } = options;
+  const { startX, startY, maxWidth, exclusions, textColor = LUXURY_COLORS.textDark } = options;
 
   let currentY = startY;
 
@@ -52,7 +53,7 @@ export function renderExclusionsSection(
       12, // 12px from Figma
       {
         bulletColor: LUXURY_COLORS.gold, // Golden brown bullets
-        textColor: LUXURY_COLORS.textDark,
+        textColor: textColor,
         bulletSize: 8, // Larger bullets to match design
         bulletIndent: 30, // 30px indent from bullet to text
         lineHeight: 1.64, // Line height from Figma

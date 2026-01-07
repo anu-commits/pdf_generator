@@ -14,6 +14,7 @@ export interface InclusionsSectionOptions {
   startY: number;
   maxWidth: number;
   inclusions: string[];
+  textColor?: any;
 }
 
 /**
@@ -25,7 +26,7 @@ export function renderInclusionsSection(
   fonts: FontFamily,
   options: InclusionsSectionOptions
 ): number {
-  const { startX, startY, maxWidth, inclusions } = options;
+  const { startX, startY, maxWidth, inclusions, textColor = LUXURY_COLORS.textDark } = options;
 
   let currentY = startY;
 
@@ -53,7 +54,7 @@ export function renderInclusionsSection(
       LUXURY_FONT_SIZES.body,
       {
         bulletColor: LUXURY_COLORS.gold,
-        textColor: LUXURY_COLORS.textDark,
+        textColor: textColor,
         bulletSize: 6,
         bulletIndent: 15,
         lineHeight: 1.5,

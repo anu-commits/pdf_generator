@@ -14,6 +14,7 @@ export interface PricingSectionOptions {
   startX: number;
   startY: number;
   pricing: PricingDetails;
+  textColor?: any;
 }
 
 /**
@@ -25,10 +26,10 @@ export function renderPricingSection(
   fonts: FontFamily,
   options: PricingSectionOptions
 ): number {
-  const { startX, startY, pricing } = options;
+  const { startX, startY, pricing, textColor = LUXURY_COLORS.textDark } = options;
 
-  const sectionWidth = 400;
-  const rowHeight = 30;
+  const sectionWidth = 412; // Matching the design width
+  const rowHeight = 35; // Slightly taller rows
 
   let currentY = startY;
 
@@ -62,10 +63,11 @@ export function renderPricingSection(
     { label: 'Total Amount', value: formatCurrency(pricing.total, pricing.currency), isBold: true }
   ];
 
-  // Draw gray rows
+  // Draw gray rows with alternating colors
   rows.forEach((row, index) => {
     const isTotal = index === rows.length - 1;
-    const rowColor = isTotal ? rgb(0.9, 0.9, 0.9) : rgb(0.95, 0.95, 0.95);
+    // Alternating gray colors - darker and lighter
+    const rowColor = index % 2 === 0 ? rgb(0.85, 0.85, 0.85) : rgb(0.95, 0.95, 0.95);
 
     // Draw row background
     page.drawRectangle({
@@ -78,24 +80,24 @@ export function renderPricingSection(
 
     // Draw label
     page.drawText(row.label, {
-      x: startX + 15,
-      y: currentY - rowHeight / 2 - 4,
-      size: isTotal ? 12 : 10,
+      x: startX + 20,
+      y: currentY - rowHeight / 2 - 5,
+      size: isTotal ? 12 : 11,
       font: row.isBold ? fonts.bodyBold : fonts.body,
-      color: LUXURY_COLORS.textDark
+      color: textColor
     });
 
     // Draw value (right-aligned)
     const valueWidth = (row.isBold ? fonts.bodyBold : fonts.body).widthOfTextAtSize(
       row.value,
-      isTotal ? 12 : 10
+      isTotal ? 12 : 11
     );
     page.drawText(row.value, {
-      x: startX + sectionWidth - 15 - valueWidth,
-      y: currentY - rowHeight / 2 - 4,
-      size: isTotal ? 12 : 10,
+      x: startX + sectionWidth - 20 - valueWidth,
+      y: currentY - rowHeight / 2 - 5,
+      size: isTotal ? 12 : 11,
       font: row.isBold ? fonts.bodyBold : fonts.body,
-      color: isTotal ? LUXURY_COLORS.gold : LUXURY_COLORS.textDark
+      color: isTotal ? LUXURY_COLORS.gold : textColor
     });
 
     currentY -= rowHeight;

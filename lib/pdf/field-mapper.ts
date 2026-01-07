@@ -36,9 +36,10 @@ import { renderTermsSection } from './sections/terms-section';
  * Generate complete luxury PDF document from itinerary data
  *
  * @param data - Itinerary data with images
+ * @param darkMode - Whether to use dark mode background (default: true)
  * @returns PDF document bytes
  */
-export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Array> {
+export async function generateItineraryPDF(data: ItineraryData, darkMode: boolean = true): Promise<Uint8Array> {
   try {
     // Initialize PDF document
     const pdfDoc = await PDFDocument.create();
@@ -49,13 +50,19 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
     // Embed all images (hero, day images, hotel images)
     const { heroImage, dayImages, hotelImages } = await embedAllImages(pdfDoc, data);
 
+    // Set background color based on dark mode
+    const backgroundColor = darkMode ? LUXURY_COLORS.darkBackground : LUXURY_COLORS.white;
+    // Set text color based on dark mode
+    const textColor = darkMode ? LUXURY_COLORS.white : LUXURY_COLORS.textDark;
+
     const startX = LUXURY_LAYOUT.content.startX;
     const maxWidth = LUXURY_LAYOUT.content.width;
     let currentY: number;
 
     // ====== PAGE 1: Full-Page Hero Image ======
     const page1 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    // No background needed - hero image fills entire page
+    // Draw background (will be covered by hero image if provided)
+    drawPageBackground(page1, backgroundColor);
 
     // Render full-page hero image
     renderHeroSection(page1, fonts, {
@@ -64,7 +71,7 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
 
     // ====== PAGE 2: Why Choose Us (Full Page) ======
     const page2 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(page2, LUXURY_COLORS.white);
+    drawPageBackground(page2, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -78,7 +85,7 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
 
     // ====== PAGE 3: Basic Details + Tour Highlights ======
     const page3 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(page3, LUXURY_COLORS.white);
+    drawPageBackground(page3, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -88,7 +95,8 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
         startX,
         startY: currentY,
         maxWidth,
-        basicDetails: data.basicDetails
+        basicDetails: data.basicDetails,
+        textColor
       });
     }
 
@@ -98,13 +106,14 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
         startX,
         startY: currentY,
         maxWidth,
-        highlights: data.tourHighlights
+        highlights: data.tourHighlights,
+        textColor
       });
     }
 
     // ====== PAGES 4+: Itinerary (multiple days per page) ======
     let itineraryPage = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(itineraryPage, LUXURY_COLORS.white);
+    drawPageBackground(itineraryPage, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -147,7 +156,7 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
 
         // Create new page
         itineraryPage = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-        drawPageBackground(itineraryPage, LUXURY_COLORS.white);
+        drawPageBackground(itineraryPage, backgroundColor);
         currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
         // Draw "Itinerary" heading on new page
@@ -176,7 +185,8 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
         currentY,
         maxWidth,
         false, // Don't draw individual vertical lines
-        isLastDay
+        isLastDay,
+        textColor
       );
 
       // Capture first gold bar position on this page
@@ -210,7 +220,7 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
     // ====== PAGE 5: Our Stays ======
     if (data.hotels && data.hotels.length > 0) {
       const page5 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-      drawPageBackground(page5, LUXURY_COLORS.white);
+      drawPageBackground(page5, backgroundColor);
 
       currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -225,7 +235,7 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
 
     // ====== PAGE 6: Flights + Inclusions ======
     const page6 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(page6, LUXURY_COLORS.white);
+    drawPageBackground(page6, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -248,13 +258,14 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
         startX,
         startY: currentY,
         maxWidth,
-        inclusions: data.inclusions
+        inclusions: data.inclusions,
+        textColor
       });
     }
 
     // ====== PAGE 7: Exclusions + Terms ======
     const page7 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(page7, LUXURY_COLORS.white);
+    drawPageBackground(page7, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -264,7 +275,8 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
         startX,
         startY: currentY,
         maxWidth,
-        exclusions: data.exclusions
+        exclusions: data.exclusions,
+        textColor
       });
     }
 
@@ -291,12 +303,13 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
       startX,
       startY: currentY,
       maxWidth,
-      terms: termsArray
+      terms: termsArray,
+      textColor
     });
 
     // ====== PAGE 8: Pricing + Bank Details ======
     const page8 = pdfDoc.addPage([LUXURY_LAYOUT.page.width, LUXURY_LAYOUT.page.height]);
-    drawPageBackground(page8, LUXURY_COLORS.white);
+    drawPageBackground(page8, backgroundColor);
 
     currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop;
 
@@ -304,7 +317,8 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
     currentY = renderPricingSection(page8, fonts, {
       startX,
       startY: currentY,
-      pricing: data.pricing
+      pricing: data.pricing,
+      textColor
     });
 
     currentY -= 40;
@@ -320,7 +334,8 @@ export async function generateItineraryPDF(data: ItineraryData): Promise<Uint8Ar
       currentY = renderBankDetailsSection(page8, fonts, {
         startX,
         startY: currentY,
-        bankDetails: data.bankDetails
+        bankDetails: data.bankDetails,
+        textColor
       });
     }
 

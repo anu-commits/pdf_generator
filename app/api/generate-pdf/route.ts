@@ -26,6 +26,7 @@ export async function POST(request: NextRequest) {
     // Parse request body (increased limit for images)
     const body = await request.json()
     const itineraryData: ItineraryData = body.itineraryData || body
+    const darkMode: boolean = body.darkMode ?? true // Default to dark mode
 
     if (!itineraryData) {
       return NextResponse.json(
@@ -55,8 +56,8 @@ export async function POST(request: NextRequest) {
     const sanitizedData = sanitizeItineraryData(itineraryData)
 
     // Generate PDF
-    console.log("Generating luxury PDF...")
-    const pdfBytes = await generateItineraryPDF(sanitizedData)
+    console.log(`Generating luxury PDF with ${darkMode ? 'dark' : 'light'} mode...`)
+    const pdfBytes = await generateItineraryPDF(sanitizedData, darkMode)
     console.log(`PDF generated successfully: ${pdfBytes.length} bytes`)
 
     // Generate filename with timestamp
