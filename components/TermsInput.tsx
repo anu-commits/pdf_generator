@@ -37,12 +37,12 @@ export default function TermsInput({
             value={terms.cancellationPolicy}
             onChange={(e) => handleUpdate('cancellationPolicy', e.target.value)}
             placeholder="Describe the cancellation policy..."
-            rows={4}
-            maxLength={500}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+            rows={6}
+            maxLength={10000}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-y"
           />
           <div className="text-right text-xs text-gray-500 mt-1">
-            {terms.cancellationPolicy.length} / 500 characters
+            {terms.cancellationPolicy.length} / 10000 characters
           </div>
         </div>
 
@@ -54,12 +54,12 @@ export default function TermsInput({
             value={terms.paymentTerms}
             onChange={(e) => handleUpdate('paymentTerms', e.target.value)}
             placeholder="Describe payment terms and conditions..."
-            rows={4}
-            maxLength={500}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+            rows={6}
+            maxLength={10000}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-y"
           />
           <div className="text-right text-xs text-gray-500 mt-1">
-            {terms.paymentTerms.length} / 500 characters
+            {terms.paymentTerms.length} / 10000 characters
           </div>
         </div>
 
@@ -71,12 +71,12 @@ export default function TermsInput({
             value={terms.travelInsurance}
             onChange={(e) => handleUpdate('travelInsurance', e.target.value)}
             placeholder="Information about travel insurance requirements..."
-            rows={3}
-            maxLength={400}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+            rows={5}
+            maxLength={10000}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-y"
           />
           <div className="text-right text-xs text-gray-500 mt-1">
-            {terms.travelInsurance.length} / 400 characters
+            {terms.travelInsurance.length} / 10000 characters
           </div>
         </div>
 
@@ -88,18 +88,18 @@ export default function TermsInput({
             value={terms.liabilityDisclaimer}
             onChange={(e) => handleUpdate('liabilityDisclaimer', e.target.value)}
             placeholder="Liability disclaimer and legal terms..."
-            rows={4}
-            maxLength={500}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-none"
+            rows={6}
+            maxLength={10000}
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500 resize-y"
           />
           <div className="text-right text-xs text-gray-500 mt-1">
-            {terms.liabilityDisclaimer.length} / 500 characters
+            {terms.liabilityDisclaimer.length} / 10000 characters
           </div>
         </div>
 
         <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
           <p className="text-sm text-blue-800">
-            <strong>Tip:</strong> These terms will be displayed at the end of the PDF. Keep them clear and concise.
+            <strong>Tip:</strong> These terms will be displayed on a dedicated page in the PDF. You can write detailed terms as needed.
           </p>
         </div>
       </div>

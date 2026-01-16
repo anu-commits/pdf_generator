@@ -1,17 +1,17 @@
-'use client';
+"use client"
 
-import React, { useState } from 'react';
-import CharacterLimitInput from './CharacterLimitInput';
+import React, { useState } from "react"
+import CharacterLimitInput from "./CharacterLimitInput"
 
 interface ListBuilderProps {
-  label: string;
-  items: string[];
-  onChange: (items: string[]) => void;
-  placeholder?: string;
-  maxItems?: number;
-  characterLimit?: number;
-  required?: boolean;
-  helperText?: string;
+  label: string
+  items: string[]
+  onChange: (items: string[]) => void
+  placeholder?: string
+  maxItems?: number
+  characterLimit?: number
+  required?: boolean
+  helperText?: string
 }
 
 /**
@@ -22,37 +22,39 @@ export default function ListBuilder({
   label,
   items,
   onChange,
-  placeholder = 'Enter item...',
+  placeholder = "Enter item...",
   maxItems = 20,
-  characterLimit = 200,
+  characterLimit = 5000,
   required = false,
-  helperText
+  helperText,
 }: ListBuilderProps) {
-  const [currentInput, setCurrentInput] = useState('');
+  const [currentInput, setCurrentInput] = useState("")
 
   const handleAddItem = () => {
     if (currentInput.trim() && items.length < maxItems) {
-      onChange([...items, currentInput.trim()]);
-      setCurrentInput('');
+      onChange([...items, currentInput.trim()])
+      setCurrentInput("")
     }
-  };
+  }
 
   const handleRemoveItem = (index: number) => {
-    onChange(items.filter((_, i) => i !== index));
-  };
+    onChange(items.filter((_, i) => i !== index))
+  }
 
   const handleUpdateItem = (index: number, value: string) => {
-    const updatedItems = [...items];
-    updatedItems[index] = value;
-    onChange(updatedItems);
-  };
+    const updatedItems = [...items]
+    updatedItems[index] = value
+    onChange(updatedItems)
+  }
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      handleAddItem();
+  const handleKeyPress = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      handleAddItem()
     }
-  };
+  }
 
   return (
     <div className="mb-6">
@@ -61,9 +63,7 @@ export default function ListBuilder({
         {required && <span className="text-red-500 ml-1">*</span>}
       </label>
 
-      {helperText && (
-        <p className="text-sm text-gray-500 mb-3">{helperText}</p>
-      )}
+      {helperText && <p className="text-sm text-gray-500 mb-3">{helperText}</p>}
 
       {/* Existing items */}
       {items.length > 0 && (
@@ -129,8 +129,8 @@ export default function ListBuilder({
       {/* Items counter */}
       <p className="mt-2 text-xs text-gray-500">
         {items.length} / {maxItems} items
-        {items.length >= maxItems && ' (Maximum reached)'}
+        {items.length >= maxItems && " (Maximum reached)"}
       </p>
     </div>
-  );
+  )
 }

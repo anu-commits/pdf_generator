@@ -6,12 +6,21 @@
  */
 
 /**
+ * Subheading within a day (e.g., Morning, Afternoon, Evening)
+ */
+export interface DaySubheading {
+  title: string;           // e.g., "Morning", "Afternoon", "Evening"
+  description: string;     // Activities for this time period
+}
+
+/**
  * Single day entry in the itinerary with image support
  */
 export interface ItineraryDay {
   dayNumber: number;
   title: string;           // e.g., "Arrive Cairo, Egypt"
-  activities: string;
+  activities: string;      // Main activities text (kept for backwards compatibility)
+  subheadings?: DaySubheading[];  // Optional subheadings (up to 3)
   image?: string;          // Base64 encoded image data
   hotel?: string;          // Hotel name to display at bottom of day
 }
@@ -20,19 +29,21 @@ export interface ItineraryDay {
  * Flight information
  */
 export interface FlightDetails {
-  flightNumber: string;
+  airlineName: string;     // e.g., "Thai AirAsia X"
+  airlineLogo?: string;    // Base64 encoded airline logo
+  flightNumber: string;    // e.g., "XJ-231"
+  cabin: string;           // Economy, Business, First Class
   departure: {
-    airport: string;
-    date: string;
-    time: string;
+    city: string;          // e.g., "Delhi"
+    date: string;          // e.g., "07-Feb-2026"
+    time: string;          // e.g., "20:39"
   };
   arrival: {
-    airport: string;
-    date: string;
-    time: string;
+    city: string;          // e.g., "Bangkok"
+    date: string;          // e.g., "08-Feb-2026"
+    time: string;          // e.g., "02:14"
   };
   duration: string;        // e.g., "4 hr and 5 min"
-  cabin: string;           // Economy, Business, First Class
 }
 
 /**
@@ -81,6 +92,15 @@ export interface PricingDetails {
 }
 
 /**
+ * Consultant details for the trip
+ */
+export interface ConsultantDetails {
+  name: string;
+  email: string;
+  phone: string;
+}
+
+/**
  * Terms and conditions
  */
 export interface TermsConditions {
@@ -94,12 +114,13 @@ export interface TermsConditions {
  * Basic Details for the trip
  */
 export interface BasicDetails {
-  duration?: string;          // e.g., "8 Days"
-  groupSize?: string;         // e.g., "2-10 people"
-  destinations?: string;      // e.g., "Egypt, Cairo"
-  guide?: string;             // e.g., "Professional Guide"
-  accommodation?: string;     // e.g., "5-Star Hotels"
-  visaRequired?: string;      // e.g., "Yes" or "Required"
+  customerDetails?: string;   // e.g., Customer name or info
+  totalPeople?: string;       // e.g., "5"
+  adults?: string;            // e.g., "3"
+  children?: string;          // e.g., "1"
+  infants?: string;           // e.g., "1"
+  travelDates?: string;       // e.g., "15-22 Mar 2024"
+  destinationImage?: string;  // Base64 encoded destination photo
 }
 
 /**
@@ -135,6 +156,9 @@ export interface ItineraryData {
   // Bank details for payment
   bankDetails: BankDetails;
 
+  // Consultant details
+  consultantDetails?: ConsultantDetails;
+
   // Terms and conditions
   terms: TermsConditions;
 
@@ -150,8 +174,10 @@ export interface ItineraryData {
 
   // New design fields
   heroImage?: string;       // Base64 encoded hero/cover image
-  whyChooseUs?: string[];   // Array of reasons/benefits
+  whyChooseUsImage?: string; // Base64 encoded why choose us page image
+  whyChooseUs?: string[];   // Array of reasons/benefits (deprecated - use whyChooseUsImage instead)
   basicDetails?: BasicDetails; // Basic trip information grid
+  basicDetailsImage?: string; // Base64 encoded basic details page image
   tourHighlights?: string[]; // Array of tour highlight bullet points
 
   // Legacy fields - kept for backwards compatibility during migration

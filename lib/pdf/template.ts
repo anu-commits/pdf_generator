@@ -5,14 +5,14 @@
  * This includes borders, section dividers, boxes, and other visual elements.
  */
 
-import { PDFDocument, PDFPage, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, PDFPage, rgb, StandardFonts } from "pdf-lib"
 import {
   PDF_CONFIG,
   COLORS,
   STYLES,
   SECTION_HEIGHTS,
   ITINERARY_CONFIG,
-} from '@/lib/config/pdf-config';
+} from "@/lib/config/pdf-config"
 
 /**
  * Initialize a new PDF document with fonts
@@ -20,15 +20,15 @@ import {
  * @returns PDF document with embedded fonts
  */
 export async function initializePDFDocument(): Promise<PDFDocument> {
-  const pdfDoc = await PDFDocument.create();
+  const pdfDoc = await PDFDocument.create()
 
   // Embed standard fonts (no external files needed)
-  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const helveticaBold = await pdfDoc.embedFont(StandardFonts.Helvetica);
-  const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman);
-  const courier = await pdfDoc.embedFont(StandardFonts.Courier);
+  const helvetica = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.Helvetica)
+  const timesRoman = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+  const courier = await pdfDoc.embedFont(StandardFonts.Courier)
 
-  return pdfDoc;
+  return pdfDoc
 }
 
 /**
@@ -46,36 +46,37 @@ export function createTemplatePage(
   totalPages: number,
   isFirstPage: boolean = true
 ): PDFPage {
-  const page = pdfDoc.addPage([PDF_CONFIG.pageWidth, PDF_CONFIG.pageHeight]);
+  const page = pdfDoc.addPage([PDF_CONFIG.pageWidth, PDF_CONFIG.pageHeight])
 
   // Draw page border
-  drawPageBorder(page);
+  drawPageBorder(page)
 
   // Draw header section
-  drawHeaderSection(page, isFirstPage);
+  drawHeaderSection(page, isFirstPage)
 
   // For first page, draw all fixed sections
   if (isFirstPage) {
     // We'll draw other sections dynamically based on content
   } else {
-    // For continuation pages, just draw a simple header
-    drawContinuationHeader(page);
+    drawContinuationHeader(page)
   }
 
-  // Draw footer section
-  drawFooterSection(page, pageNumber, totalPages);
-
-  return page;
+  return page
 }
-
 /**
  * Draw outer page border
  *
  * @param page - PDF page
  */
 function drawPageBorder(page: PDFPage): void {
-  const { pageWidth, pageHeight, marginLeft, marginRight, marginTop, marginBottom } =
-    PDF_CONFIG;
+  const {
+    pageWidth,
+    pageHeight,
+    marginLeft,
+    marginRight,
+    marginTop,
+    marginBottom,
+  } = PDF_CONFIG
 
   // Draw outer border rectangle
   page.drawRectangle({
@@ -85,7 +86,7 @@ function drawPageBorder(page: PDFPage): void {
     height: pageHeight - marginTop - marginBottom,
     borderColor: rgb(COLORS.darkGray.r, COLORS.darkGray.g, COLORS.darkGray.b),
     borderWidth: STYLES.borderWidth,
-  });
+  })
 }
 
 /**
@@ -95,9 +96,9 @@ function drawPageBorder(page: PDFPage): void {
  * @param isFirstPage - Whether this is the first page
  */
 function drawHeaderSection(page: PDFPage, isFirstPage: boolean): void {
-  const { marginLeft, marginRight, pageHeight } = PDF_CONFIG;
-  const headerTop = pageHeight - PDF_CONFIG.marginTop;
-  const headerBottom = headerTop - SECTION_HEIGHTS.header;
+  const { marginLeft, marginRight, pageHeight } = PDF_CONFIG
+  const headerTop = pageHeight - PDF_CONFIG.marginTop
+  const headerBottom = headerTop - SECTION_HEIGHTS.header
 
   // Draw horizontal line below header
   page.drawLine({
@@ -105,7 +106,7 @@ function drawHeaderSection(page: PDFPage, isFirstPage: boolean): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: headerBottom },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 
   // Logo placeholder box (only on first page)
   if (isFirstPage) {
@@ -114,9 +115,13 @@ function drawHeaderSection(page: PDFPage, isFirstPage: boolean): void {
       y: headerBottom + 15,
       width: 100,
       height: 50,
-      borderColor: rgb(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b),
+      borderColor: rgb(
+        COLORS.lightGray.r,
+        COLORS.lightGray.g,
+        COLORS.lightGray.b
+      ),
       borderWidth: STYLES.sectionBorderWidth,
-    });
+    })
   }
 }
 
@@ -136,9 +141,9 @@ function drawContinuationHeader(page: PDFPage): void {
  * @param page - PDF page
  */
 export function drawClientInfoSection(page: PDFPage): void {
-  const { marginLeft, marginRight, pageHeight } = PDF_CONFIG;
-  const sectionTop = pageHeight - PDF_CONFIG.marginTop - SECTION_HEIGHTS.header;
-  const sectionBottom = sectionTop - SECTION_HEIGHTS.clientInfo;
+  const { marginLeft, marginRight, pageHeight } = PDF_CONFIG
+  const sectionTop = pageHeight - PDF_CONFIG.marginTop - SECTION_HEIGHTS.header
+  const sectionBottom = sectionTop - SECTION_HEIGHTS.clientInfo
 
   // Draw horizontal line below section
   page.drawLine({
@@ -146,7 +151,7 @@ export function drawClientInfoSection(page: PDFPage): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: sectionBottom },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 
   // Background for client info section (light)
   page.drawRectangle({
@@ -155,7 +160,7 @@ export function drawClientInfoSection(page: PDFPage): void {
     width: PDF_CONFIG.pageWidth - marginLeft - marginRight - 2,
     height: SECTION_HEIGHTS.clientInfo - 2,
     color: rgb(0.98, 0.98, 0.98),
-  });
+  })
 }
 
 /**
@@ -164,8 +169,11 @@ export function drawClientInfoSection(page: PDFPage): void {
  * @param page - PDF page
  * @param yPosition - Y position for the section
  */
-export function drawItinerarySectionHeader(page: PDFPage, yPosition: number): void {
-  const { marginLeft, marginRight } = PDF_CONFIG;
+export function drawItinerarySectionHeader(
+  page: PDFPage,
+  yPosition: number
+): void {
+  const { marginLeft, marginRight } = PDF_CONFIG
 
   // Draw horizontal line above itinerary section
   page.drawLine({
@@ -173,7 +181,7 @@ export function drawItinerarySectionHeader(page: PDFPage, yPosition: number): vo
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: yPosition },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 }
 
 /**
@@ -188,18 +196,23 @@ export function drawDayEntryBox(
   yPosition: number,
   height: number
 ): void {
-  const { marginLeft } = PDF_CONFIG;
+  const { marginLeft } = PDF_CONFIG
 
   // Draw light border around day entry
   page.drawRectangle({
     x: marginLeft + 10,
     y: yPosition - height,
-    width: ITINERARY_CONFIG.dayNumberWidth + ITINERARY_CONFIG.activitiesWidth + 20,
+    width:
+      ITINERARY_CONFIG.dayNumberWidth + ITINERARY_CONFIG.activitiesWidth + 20,
     height: height,
-    borderColor: rgb(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b),
+    borderColor: rgb(
+      COLORS.lightGray.r,
+      COLORS.lightGray.g,
+      COLORS.lightGray.b
+    ),
     borderWidth: 0.5,
     color: rgb(0.99, 0.99, 0.99),
-  });
+  })
 
   // Draw vertical line between day number and activities
   page.drawLine({
@@ -213,7 +226,7 @@ export function drawDayEntryBox(
     },
     thickness: 0.5,
     color: rgb(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b),
-  });
+  })
 }
 
 /**
@@ -223,7 +236,7 @@ export function drawDayEntryBox(
  * @param yPosition - Y position for the section
  */
 export function drawHotelSection(page: PDFPage, yPosition: number): void {
-  const { marginLeft, marginRight } = PDF_CONFIG;
+  const { marginLeft, marginRight } = PDF_CONFIG
 
   // Draw horizontal line above hotel section
   page.drawLine({
@@ -231,16 +244,16 @@ export function drawHotelSection(page: PDFPage, yPosition: number): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: yPosition },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 
   // Draw horizontal line below hotel section
-  const sectionBottom = yPosition - SECTION_HEIGHTS.hotel;
+  const sectionBottom = yPosition - SECTION_HEIGHTS.hotel
   page.drawLine({
     start: { x: marginLeft, y: sectionBottom },
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: sectionBottom },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 }
 
 /**
@@ -250,7 +263,7 @@ export function drawHotelSection(page: PDFPage, yPosition: number): void {
  * @param yPosition - Y position for the section
  */
 export function drawInclusionsSection(page: PDFPage, yPosition: number): void {
-  const { marginLeft, marginRight } = PDF_CONFIG;
+  const { marginLeft, marginRight } = PDF_CONFIG
 
   // Draw horizontal line above section
   page.drawLine({
@@ -258,18 +271,18 @@ export function drawInclusionsSection(page: PDFPage, yPosition: number): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: yPosition },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 
   // Draw vertical line separating inclusions and exclusions
-  const middleX = (marginLeft + PDF_CONFIG.pageWidth - marginRight) / 2;
-  const sectionBottom = yPosition - SECTION_HEIGHTS.inclusions;
+  const middleX = (marginLeft + PDF_CONFIG.pageWidth - marginRight) / 2
+  const sectionBottom = yPosition - SECTION_HEIGHTS.inclusions
 
   page.drawLine({
     start: { x: middleX, y: yPosition - 20 },
     end: { x: middleX, y: sectionBottom + 10 },
     thickness: 0.5,
     color: rgb(COLORS.lightGray.r, COLORS.lightGray.g, COLORS.lightGray.b),
-  });
+  })
 
   // Draw horizontal line below section
   page.drawLine({
@@ -277,7 +290,7 @@ export function drawInclusionsSection(page: PDFPage, yPosition: number): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: sectionBottom },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 }
 
 /**
@@ -287,7 +300,7 @@ export function drawInclusionsSection(page: PDFPage, yPosition: number): void {
  * @param yPosition - Y position for the section
  */
 export function drawPricingSection(page: PDFPage, yPosition: number): void {
-  const { marginLeft, marginRight } = PDF_CONFIG;
+  const { marginLeft, marginRight } = PDF_CONFIG
 
   // Draw horizontal line above pricing
   page.drawLine({
@@ -295,17 +308,17 @@ export function drawPricingSection(page: PDFPage, yPosition: number): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: yPosition },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 
   // Background highlight for pricing
-  const sectionBottom = yPosition - SECTION_HEIGHTS.pricing;
+  const sectionBottom = yPosition - SECTION_HEIGHTS.pricing
   page.drawRectangle({
     x: marginLeft + 1,
     y: sectionBottom + 1,
     width: PDF_CONFIG.pageWidth - marginLeft - marginRight - 2,
     height: SECTION_HEIGHTS.pricing - 2,
     color: rgb(0.95, 0.97, 1.0), // Light blue tint
-  });
+  })
 
   // Draw horizontal line below pricing
   page.drawLine({
@@ -313,40 +326,7 @@ export function drawPricingSection(page: PDFPage, yPosition: number): void {
     end: { x: PDF_CONFIG.pageWidth - marginRight, y: sectionBottom },
     thickness: STYLES.sectionBorderWidth,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
-}
-
-/**
- * Draw footer section
- *
- * @param page - PDF page
- * @param pageNumber - Current page number
- * @param totalPages - Total number of pages
- */
-function drawFooterSection(
-  page: PDFPage,
-  pageNumber: number,
-  totalPages: number
-): void {
-  const { marginLeft, marginRight, marginBottom } = PDF_CONFIG;
-  const footerTop = marginBottom + SECTION_HEIGHTS.footer;
-
-  // Draw horizontal line above footer
-  page.drawLine({
-    start: { x: marginLeft, y: footerTop },
-    end: { x: PDF_CONFIG.pageWidth - marginRight, y: footerTop },
-    thickness: STYLES.sectionBorderWidth,
-    color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
-
-  // Light background for footer
-  page.drawRectangle({
-    x: marginLeft + 1,
-    y: marginBottom + 1,
-    width: PDF_CONFIG.pageWidth - marginLeft - marginRight - 2,
-    height: SECTION_HEIGHTS.footer - 2,
-    color: rgb(0.97, 0.97, 0.97),
-  });
+  })
 }
 
 /**
@@ -372,5 +352,5 @@ export function drawLine(
     end: { x: endX, y: endY },
     thickness: thickness,
     color: rgb(COLORS.gray.r, COLORS.gray.g, COLORS.gray.b),
-  });
+  })
 }

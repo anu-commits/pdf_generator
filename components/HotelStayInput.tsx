@@ -18,7 +18,7 @@ interface HotelStayInputProps {
 export default function HotelStayInput({
   hotels,
   onChange,
-  maxHotels = 5,
+  maxHotels = 100, // No practical limit
   maxImagesPerHotel = 4
 }: HotelStayInputProps) {
   const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});

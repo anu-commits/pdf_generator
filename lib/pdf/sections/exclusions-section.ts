@@ -30,12 +30,12 @@ export function renderExclusionsSection(
 
   let currentY = startY;
 
-  // Draw "Exclusions" header in gold (matching Figma design - serif font, larger size)
+  // Draw "Exclusions" header in gold (Inter Bold font)
   page.drawText('Exclusions', {
     x: startX,
     y: currentY,
     size: 36,
-    font: fonts.heading, // Times New Roman from Figma
+    font: fonts.headingBold, // Inter Bold for headings
     color: LUXURY_COLORS.gold
   });
 

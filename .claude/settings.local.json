@@ -16,7 +16,14 @@
       "mcp__figma__get_design_context",
       "Bash(git add:*)",
       "Bash(dir:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(npx tsc:*)",
+      "Bash(ping:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp list)",
+      "Bash(timeout /t 5)",
+      "Bash(curl:*)",
+      "Bash(node -e \"require\\(''./lib/pdf/sections/itinerary-section.ts''\\)\")"
     ]
   }
 }

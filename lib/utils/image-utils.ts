@@ -8,14 +8,24 @@ import { PDFDocument, PDFImage, PDFPage, rgb } from 'pdf-lib';
 import { ValidationResult } from '../types/itinerary';
 
 /**
- * Maximum image file size (5MB)
+ * Maximum image file size (no practical limit)
  */
-const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
+const MAX_IMAGE_SIZE = 500 * 1024 * 1024; // 500MB - essentially no limit
 
 /**
- * Supported image formats
+ * Supported image formats (only PNG and JPEG - pdf-lib doesn't support AVIF, WebP, HEIC)
  */
 const SUPPORTED_FORMATS = ['image/jpeg', 'image/jpg', 'image/png'];
+
+/**
+ * Unsupported formats that users commonly try to upload
+ */
+const UNSUPPORTED_FORMATS: Record<string, string> = {
+  'image/avif': 'AVIF',
+  'image/webp': 'WebP',
+  'image/heic': 'HEIC',
+  'image/heif': 'HEIF',
+};
 
 /**
  * Convert a File object to base64 string
@@ -49,8 +59,12 @@ export async function fileToBase64(file: File): Promise<string> {
 export function validateImage(file: File): ValidationResult {
   const errors: Record<string, string> = {};
 
+  // Check for specifically unsupported formats first
+  if (UNSUPPORTED_FORMATS[file.type]) {
+    errors.format = `${UNSUPPORTED_FORMATS[file.type]} images are not supported. Please convert to PNG or JPEG.`;
+  }
   // Check file type
-  if (!SUPPORTED_FORMATS.includes(file.type)) {
+  else if (!SUPPORTED_FORMATS.includes(file.type)) {
     errors.format = `Invalid format. Only JPEG and PNG images are supported.`;
   }
 
@@ -98,17 +112,87 @@ export function validateImages(files: File[]): ValidationResult {
  * @returns Object with format and base64 data
  */
 export function parseBase64Image(dataUrl: string): { format: 'png' | 'jpg', data: string } {
-  // Extract MIME type and base64 data
-  const matches = dataUrl.match(/^data:image\/(png|jpeg|jpg);base64,(.+)$/);
-
-  if (!matches) {
-    throw new Error('Invalid base64 image format');
+  // Extract base64 data after the comma
+  const commaIndex = dataUrl.indexOf(',');
+  if (commaIndex === -1) {
+    throw new Error('Invalid base64 image format: no comma found');
   }
 
-  const format = matches[1] === 'jpeg' ? 'jpg' : matches[1] as 'png' | 'jpg';
-  const data = matches[2];
+  const data = dataUrl.substring(commaIndex + 1);
+
+  // Detect format from actual bytes instead of MIME type
+  // PNG magic bytes: 0x89 0x50 0x4E 0x47 (base64 starts with "iVBORw")
+  // JPEG magic bytes: 0xFF 0xD8 (base64 starts with "/9j/")
+  const format = detectImageFormat(data);
 
   return { format, data };
+}
+
+/**
+ * Detect image format from base64 data by examining magic bytes
+ * Throws error for unsupported formats like AVIF, WebP, etc.
+ */
+function detectImageFormat(base64Data: string): 'png' | 'jpg' {
+  // Clean the base64 data - remove any whitespace or line breaks
+  const cleanData = base64Data.replace(/\s/g, '');
+
+  // PNG files start with: 0x89 0x50 0x4E 0x47 which in base64 is "iVBORw"
+  if (cleanData.startsWith('iVBORw')) {
+    return 'png';
+  }
+
+  // JPEG files start with: 0xFF 0xD8 which in base64 is "/9j/"
+  if (cleanData.startsWith('/9j/')) {
+    return 'jpg';
+  }
+
+  // Try to decode first few bytes and check
+  try {
+    const binaryString = Buffer.from(cleanData.substring(0, 40), 'base64').toString('binary');
+    const bytes = new Uint8Array(binaryString.length);
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    // Check PNG signature: 137 80 78 71 (0x89 0x50 0x4E 0x47)
+    if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) {
+      return 'png';
+    }
+
+    // Check JPEG signature: 255 216 (0xFF 0xD8)
+    if (bytes[0] === 0xFF && bytes[1] === 0xD8) {
+      return 'jpg';
+    }
+
+    // Check for AVIF/HEIC (ftyp box) - not supported
+    const ftypString = String.fromCharCode(bytes[4], bytes[5], bytes[6], bytes[7]);
+    if (ftypString === 'ftyp') {
+      const brandString = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+      if (brandString === 'avif' || brandString === 'avis') {
+        throw new Error('AVIF images are not supported. Please convert to PNG or JPEG.');
+      }
+      if (brandString === 'heic' || brandString === 'heix' || brandString === 'mif1') {
+        throw new Error('HEIC images are not supported. Please convert to PNG or JPEG.');
+      }
+    }
+
+    // Check for WebP (RIFF....WEBP) - not supported
+    const riffString = String.fromCharCode(bytes[0], bytes[1], bytes[2], bytes[3]);
+    if (riffString === 'RIFF') {
+      const webpString = String.fromCharCode(bytes[8], bytes[9], bytes[10], bytes[11]);
+      if (webpString === 'WEBP') {
+        throw new Error('WebP images are not supported. Please convert to PNG or JPEG.');
+      }
+    }
+  } catch (e) {
+    if (e instanceof Error && e.message.includes('not supported')) {
+      throw e;
+    }
+    console.error('Error decoding base64:', e);
+  }
+
+  // If we can't detect format, throw an error
+  throw new Error('Unsupported image format. Please use PNG or JPEG images only.');
 }
 
 /**
@@ -125,8 +209,13 @@ export async function embedImageInPDF(
   try {
     const { format, data } = parseBase64Image(base64Image);
 
-    // Convert base64 to Uint8Array
-    const imageBytes = Uint8Array.from(atob(data), c => c.charCodeAt(0));
+    // Clean the base64 data
+    const cleanData = data.replace(/\s/g, '');
+
+    // Convert base64 to Uint8Array using Buffer (Node.js)
+    const imageBytes = Buffer.from(cleanData, 'base64');
+
+    console.log('Embedding image, format:', format, 'bytes:', imageBytes.length);
 
     // Embed image based on format
     if (format === 'png') {

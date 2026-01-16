@@ -148,7 +148,7 @@ export default function ImageUploadInput({
             )}
           </p>
           <p className="mt-1 text-xs text-gray-500">
-            PNG, JPG up to {maxSizeMB}MB
+            PNG, JPG (no size limit)
           </p>
         </div>
       )}

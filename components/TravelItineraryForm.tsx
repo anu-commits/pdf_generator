@@ -17,13 +17,13 @@ import {
   PricingDetails,
   TermsConditions,
   BasicDetails,
+  ConsultantDetails,
 } from "@/lib/types/itinerary"
 import CharacterLimitInput from "./CharacterLimitInput"
 import ItineraryDayInput from "./ItineraryDayInput"
 import FlightInput from "./FlightInput"
 import HotelStayInput from "./HotelStayInput"
 import BankDetailsInput from "./BankDetailsInput"
-import TermsInput from "./TermsInput"
 import ListBuilder from "./ListBuilder"
 import ImageUploadInput from "./ImageUploadInput"
 import PDFPreview from "./PDFPreview"
@@ -55,7 +55,7 @@ export default function TravelItineraryForm() {
         activities:
           "Arrive at Cairo International Airport. Meet and greet by our representative. Transfer to hotel. Evening visit to Khan El Khalili bazaar for shopping and dinner at traditional restaurant.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
+        hotel: "",
       },
       {
         dayNumber: 2,
@@ -63,7 +63,7 @@ export default function TravelItineraryForm() {
         activities:
           "Full day tour of the Giza Pyramids, Sphinx, and Egyptian Museum. Enjoy a traditional Egyptian lunch. Camel ride at sunset near the pyramids. Return to hotel for dinner.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
+        hotel: "",
       },
       {
         dayNumber: 3,
@@ -71,41 +71,43 @@ export default function TravelItineraryForm() {
         activities:
           "Early morning flight to Luxor. Visit Valley of the Kings, Karnak Temple, and Temple of Hatshepsut. Lunch at Nile-side restaurant. Evening return flight to Cairo.",
         image: undefined,
-        hotel: "FOUR SEASONS HOTEL CAIRO AT NILE PLAZA",
+        hotel: "",
       },
     ],
 
     // Flights
     flights: [
       {
-        flightNumber: "MS 960",
+        airlineName: "EgyptAir",
+        flightNumber: "MS-960",
+        cabin: "Economy",
         departure: {
-          airport: "Dubai",
+          city: "Dubai",
           date: "2024-03-15",
           time: "07:30",
         },
         arrival: {
-          airport: "Cairo",
+          city: "Cairo",
           date: "2024-03-15",
           time: "10:45",
         },
         duration: "4h 15m",
-        cabin: "Economy",
       },
       {
-        flightNumber: "MS 961",
+        airlineName: "EgyptAir",
+        flightNumber: "MS-961",
+        cabin: "Economy",
         departure: {
-          airport: "Cairo",
+          city: "Cairo",
           date: "2024-03-22",
           time: "18:30",
         },
         arrival: {
-          airport: "Dubai",
+          city: "Dubai",
           date: "2024-03-22",
           time: "23:45",
         },
         duration: "3h 15m",
-        cabin: "Economy",
       },
     ],
 
@@ -153,17 +155,28 @@ export default function TravelItineraryForm() {
       iban: "AE070331234567890123456",
     },
 
-    // Terms
-    terms: {
-      cancellationPolicy:
-        "Free cancellation up to 14 days before departure. 50% charge for cancellations 7-14 days before. No refund for cancellations within 7 days of departure.",
-      paymentTerms:
-        "50% deposit required at booking. Final payment due 30 days before departure. Payment accepted via bank transfer or credit card.",
-      travelInsurance:
-        "Travel insurance is strongly recommended and can be arranged through our partner providers. Coverage should include trip cancellation, medical emergencies, and baggage loss.",
-      liabilityDisclaimer:
-        "The company acts only as an agent for the hotels, airlines, and other service providers and is not liable for any loss, injury, or damage to person or property. Travelers are responsible for obtaining necessary travel documents and insurance.",
+    // Consultant details
+    consultantDetails: {
+      name: "Sarah Johnson",
+      email: "sarah@theluxetrails.com",
+      phone: "+1 (555) 123-4567",
     },
+
+    // Terms (keeping legacy object for backwards compatibility)
+    terms: {
+      cancellationPolicy: "",
+      paymentTerms: "",
+      travelInsurance: "",
+      liabilityDisclaimer: "",
+    },
+
+    // Terms as bullet list (new format)
+    termsList: [
+      "Free cancellation up to 14 days before departure. 50% charge for cancellations 7-14 days before. No refund for cancellations within 7 days of departure.",
+      "50% deposit required at booking. Final payment due 30 days before departure. Payment accepted via bank transfer or credit card.",
+      "Travel insurance is strongly recommended and can be arranged through our partner providers.",
+      "The company acts only as an agent for the hotels, airlines, and other service providers and is not liable for any loss, injury, or damage.",
+    ],
 
     // Contact information
     contactInfo:
@@ -174,19 +187,13 @@ export default function TravelItineraryForm() {
 
     // New design fields
     heroImage: undefined,
-    whyChooseUs: [
-      "Expert local guides with 10+ years experience",
-      "Luxury accommodations in prime locations",
-      "24/7 customer support throughout your journey",
-      "Carefully curated authentic experiences",
-    ],
     basicDetails: {
-      duration: "8 Days / 7 Nights",
-      groupSize: "2-10 People",
-      destinations: "Cairo, Luxor, Egypt",
-      guide: "Professional Guide",
-      accommodation: "5-Star Hotels",
-      visaRequired: "Required",
+      customerDetails: "John Smith",
+      totalPeople: "5",
+      adults: "3",
+      children: "1",
+      infants: "1",
+      travelDates: "15-22 Mar 2024",
     },
     tourHighlights: [
       "Visit the iconic Pyramids of Giza and the Great Sphinx",
@@ -229,8 +236,8 @@ export default function TravelItineraryForm() {
     setFormData({ ...formData, heroImage: base64Image || undefined })
   }
 
-  const handleWhyChooseUsChange = (whyChooseUs: string[]) => {
-    setFormData({ ...formData, whyChooseUs })
+  const handleBasicDetailsImageChange = (base64Image: string | null) => {
+    setFormData({ ...formData, basicDetailsImage: base64Image || undefined })
   }
 
   const handleBasicDetailsChange = (
@@ -344,9 +351,20 @@ export default function TravelItineraryForm() {
     setFormData({ ...formData, bankDetails })
   }
 
+  // Consultant Details Handlers
+  const handleConsultantDetailsChange = (field: keyof ConsultantDetails, value: string) => {
+    setFormData({
+      ...formData,
+      consultantDetails: {
+        ...formData.consultantDetails!,
+        [field]: value
+      }
+    })
+  }
+
   // Terms Handlers
-  const handleTermsChange = (terms: TermsConditions) => {
-    setFormData({ ...formData, terms })
+  const handleTermsListChange = (termsList: string[]) => {
+    setFormData({ ...formData, termsList })
   }
 
   // Contact Info Handler
@@ -447,7 +465,7 @@ export default function TravelItineraryForm() {
             value={formData.companyName || ""}
             onChange={handleCompanyNameChange}
             label="Company Name"
-            characterLimit={100}
+            characterLimit={500}
             placeholder="e.g., THE LUXE TRAILS"
             required={false}
           />
@@ -466,19 +484,6 @@ export default function TravelItineraryForm() {
           />
         </section>
 
-        {/* Why Choose Us Section */}
-        <section className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
-            Why Choose Us
-          </h2>
-          <ListBuilder
-            items={formData.whyChooseUs || []}
-            onChange={handleWhyChooseUsChange}
-            placeholder="Add a reason why customers should choose you"
-            label="Reasons/Benefits"
-            characterLimit={200}
-          />
-        </section>
 
         {/* Basic Details Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
@@ -487,58 +492,68 @@ export default function TravelItineraryForm() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CharacterLimitInput
-              value={formData.basicDetails?.duration || ""}
-              onChange={(value) => handleBasicDetailsChange("duration", value)}
-              label="Duration"
-              characterLimit={50}
-              placeholder="e.g., 8 Days / 7 Nights"
+              value={formData.basicDetails?.customerDetails || ""}
+              onChange={(value) => handleBasicDetailsChange("customerDetails", value)}
+              label="Customer Details"
+              characterLimit={500}
+              placeholder="e.g., John Smith"
               required={false}
             />
             <CharacterLimitInput
-              value={formData.basicDetails?.groupSize || ""}
-              onChange={(value) => handleBasicDetailsChange("groupSize", value)}
-              label="Group Size"
+              value={formData.basicDetails?.totalPeople || ""}
+              onChange={(value) => handleBasicDetailsChange("totalPeople", value)}
+              label="Total People"
               characterLimit={50}
-              placeholder="e.g., 2-10 People"
+              placeholder="e.g., 5"
               required={false}
             />
             <CharacterLimitInput
-              value={formData.basicDetails?.destinations || ""}
+              value={formData.basicDetails?.adults || ""}
+              onChange={(value) => handleBasicDetailsChange("adults", value)}
+              label="Adults"
+              characterLimit={50}
+              placeholder="e.g., 3"
+              required={false}
+            />
+            <CharacterLimitInput
+              value={formData.basicDetails?.children || ""}
               onChange={(value) =>
-                handleBasicDetailsChange("destinations", value)
+                handleBasicDetailsChange("children", value)
               }
-              label="Destinations"
-              characterLimit={100}
-              placeholder="e.g., Cairo, Luxor, Egypt"
-              required={false}
-            />
-            <CharacterLimitInput
-              value={formData.basicDetails?.guide || ""}
-              onChange={(value) => handleBasicDetailsChange("guide", value)}
-              label="Guide"
+              label="Children"
               characterLimit={50}
-              placeholder="e.g., Professional Guide"
+              placeholder="e.g., 1"
               required={false}
             />
             <CharacterLimitInput
-              value={formData.basicDetails?.accommodation || ""}
+              value={formData.basicDetails?.infants || ""}
               onChange={(value) =>
-                handleBasicDetailsChange("accommodation", value)
+                handleBasicDetailsChange("infants", value)
               }
-              label="Accommodation"
-              characterLimit={100}
-              placeholder="e.g., 5-Star Hotels"
-              required={false}
-            />
-            <CharacterLimitInput
-              value={formData.basicDetails?.visaRequired || ""}
-              onChange={(value) =>
-                handleBasicDetailsChange("visaRequired", value)
-              }
-              label="Visa Required"
+              label="Infants"
               characterLimit={50}
-              placeholder="e.g., Required / Not Required"
+              placeholder="e.g., 1"
               required={false}
+            />
+            <CharacterLimitInput
+              value={formData.basicDetails?.travelDates || ""}
+              onChange={(value) =>
+                handleBasicDetailsChange("travelDates", value)
+              }
+              label="Travel Dates"
+              characterLimit={500}
+              placeholder="e.g., 15-22 Mar 2024"
+              required={false}
+            />
+          </div>
+          <div className="mt-4">
+            <ImageUploadInput
+              label="Destination Image"
+              value={formData.basicDetails?.destinationImage}
+              onChange={(base64Image) =>
+                handleBasicDetailsChange("destinationImage", base64Image || "")
+              }
+              helperText="Upload a destination photo to display on the Basic Details page"
             />
           </div>
         </section>
@@ -553,7 +568,7 @@ export default function TravelItineraryForm() {
             onChange={handleTourHighlightsChange}
             placeholder="Add a tour highlight"
             label="Highlights"
-            characterLimit={200}
+            characterLimit={5000}
           />
         </section>
 
@@ -567,7 +582,7 @@ export default function TravelItineraryForm() {
               value={formData.clientName}
               onChange={handleClientNameChange}
               label="Client Name"
-              characterLimit={50}
+              characterLimit={500}
               placeholder="Enter client's full name"
               required={true}
             />
@@ -576,7 +591,7 @@ export default function TravelItineraryForm() {
               value={formData.destination}
               onChange={handleDestinationChange}
               label="Destination"
-              characterLimit={50}
+              characterLimit={500}
               placeholder="e.g., Cairo, Egypt"
               required={true}
             />
@@ -611,7 +626,7 @@ export default function TravelItineraryForm() {
               value={formData.bookingRef}
               onChange={handleBookingRefChange}
               label="Booking Reference"
-              characterLimit={20}
+              characterLimit={100}
               placeholder="e.g., BK-2024-001"
               required={true}
             />
@@ -785,12 +800,51 @@ export default function TravelItineraryForm() {
           />
         </section>
 
+        {/* Consultant Details Section */}
+        <section className="bg-white rounded-lg shadow-md p-6">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
+            Consultant Details
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <CharacterLimitInput
+              value={formData.consultantDetails?.name || ''}
+              onChange={(value) => handleConsultantDetailsChange('name', value)}
+              label="Name"
+              characterLimit={100}
+              placeholder="e.g., Sarah Johnson"
+              required={true}
+            />
+            <CharacterLimitInput
+              value={formData.consultantDetails?.email || ''}
+              onChange={(value) => handleConsultantDetailsChange('email', value)}
+              label="Email"
+              characterLimit={100}
+              placeholder="e.g., sarah@company.com"
+              required={true}
+            />
+            <CharacterLimitInput
+              value={formData.consultantDetails?.phone || ''}
+              onChange={(value) => handleConsultantDetailsChange('phone', value)}
+              label="Phone"
+              characterLimit={50}
+              placeholder="e.g., +1 (555) 123-4567"
+              required={true}
+            />
+          </div>
+        </section>
+
         {/* Terms & Conditions Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
             Terms & Conditions
           </h2>
-          <TermsInput terms={formData.terms} onChange={handleTermsChange} />
+          <ListBuilder
+            items={formData.termsList || []}
+            onChange={handleTermsListChange}
+            placeholder="Add a term or condition"
+            label="Terms"
+            characterLimit={5000}
+          />
         </section>
 
         {/* Contact Information Section */}
@@ -802,9 +856,9 @@ export default function TravelItineraryForm() {
             value={formData.contactInfo}
             onChange={handleContactInfoChange}
             label="Contact Details"
-            characterLimit={150}
+            characterLimit={2000}
             multiline={true}
-            rows={3}
+            rows={4}
             placeholder="Phone, email, website, address, etc."
             required={true}
           />

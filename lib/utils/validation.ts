@@ -167,12 +167,16 @@ export function validateItineraryData(data: ItineraryData): ValidationResult {
 export function validateFlight(flight: FlightDetails): ValidationResult {
   const errors: Record<string, string> = {};
 
+  if (!flight.airlineName || flight.airlineName.trim() === '') {
+    errors.airlineName = 'Airline name is required';
+  }
+
   if (!flight.flightNumber || flight.flightNumber.trim() === '') {
     errors.flightNumber = 'Flight number is required';
   }
 
-  if (!flight.departure.airport || flight.departure.airport.trim() === '') {
-    errors.departureAirport = 'Departure airport is required';
+  if (!flight.departure.city || flight.departure.city.trim() === '') {
+    errors.departureCity = 'Departure city is required';
   }
 
   if (!flight.departure.date || !isValidDate(flight.departure.date)) {
@@ -183,8 +187,8 @@ export function validateFlight(flight: FlightDetails): ValidationResult {
     errors.departureTime = 'Departure time is required';
   }
 
-  if (!flight.arrival.airport || flight.arrival.airport.trim() === '') {
-    errors.arrivalAirport = 'Arrival airport is required';
+  if (!flight.arrival.city || flight.arrival.city.trim() === '') {
+    errors.arrivalCity = 'Arrival city is required';
   }
 
   if (!flight.arrival.date || !isValidDate(flight.arrival.date)) {
@@ -321,14 +325,15 @@ export function sanitizeItineraryData(data: ItineraryData): ItineraryData {
     })),
     flights: data.flights ? data.flights.map(flight => ({
       ...flight,
+      airlineName: sanitizeText(flight.airlineName),
       flightNumber: sanitizeText(flight.flightNumber),
       departure: {
         ...flight.departure,
-        airport: sanitizeText(flight.departure.airport),
+        city: sanitizeText(flight.departure.city),
       },
       arrival: {
         ...flight.arrival,
-        airport: sanitizeText(flight.arrival.airport),
+        city: sanitizeText(flight.arrival.city),
       },
       duration: sanitizeText(flight.duration),
       cabin: sanitizeText(flight.cabin),

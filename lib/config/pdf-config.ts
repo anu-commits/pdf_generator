@@ -14,8 +14,8 @@
  */
 export const PDF_CONFIG = {
   // Page size in points (1 point = 1/72 inch)
-  pageWidth: 612,      // 8.5 inches × 72 = 612 points
-  pageHeight: 792,     // 11 inches × 72 = 792 points
+  pageWidth: 612, // 8.5 inches × 72 = 612 points
+  pageHeight: 792, // 11 inches × 72 = 792 points
 
   // Margins (in points)
   marginLeft: 40,
@@ -25,23 +25,23 @@ export const PDF_CONFIG = {
 
   // Usable content area
   get contentWidth() {
-    return this.pageWidth - this.marginLeft - this.marginRight;
+    return this.pageWidth - this.marginLeft - this.marginRight
   },
   get contentHeight() {
-    return this.pageHeight - this.marginTop - this.marginBottom;
+    return this.pageHeight - this.marginTop - this.marginBottom
   },
-} as const;
+} as const
 
 /**
  * Font Configuration
  * Standard PDF fonts (no external font files needed)
  */
 export const FONTS = {
-  HELVETICA: 'Helvetica',
-  HELVETICA_BOLD: 'Helvetica-Bold',
-  TIMES_ROMAN: 'Times-Roman',
-  COURIER: 'Courier',
-} as const;
+  HELVETICA: "Helvetica",
+  HELVETICA_BOLD: "Helvetica-Bold",
+  TIMES_ROMAN: "Times-Roman",
+  COURIER: "Courier",
+} as const
 
 /**
  * Default Font Sizes
@@ -52,7 +52,7 @@ export const FONT_SIZES = {
   label: 10,
   body: 12,
   small: 9,
-} as const;
+} as const
 
 /**
  * Colors (RGB values 0-1)
@@ -64,8 +64,8 @@ export const COLORS = {
   lightGray: { r: 0.8, g: 0.8, b: 0.8 },
   white: { r: 1, g: 1, b: 1 },
   primary: { r: 0.15, g: 0.33, b: 0.55 }, // Professional blue
-  accent: { r: 0.85, g: 0.65, b: 0.13 },  // Gold accent
-} as const;
+  accent: { r: 0.85, g: 0.65, b: 0.13 }, // Gold accent
+} as const
 
 /**
  * Line Heights
@@ -74,7 +74,7 @@ export const LINE_HEIGHTS = {
   tight: 1.0,
   normal: 1.2,
   relaxed: 1.5,
-} as const;
+} as const
 
 /**
  * Border and Line Styles
@@ -84,7 +84,7 @@ export const STYLES = {
   sectionBorderWidth: 0.5,
   lineSpacing: 5,
   sectionPadding: 10,
-} as const;
+} as const
 
 /**
  * Section Heights (in points)
@@ -102,30 +102,31 @@ export const SECTION_HEIGHTS = {
   // On page 1: remaining space after fixed sections
   // On continuation pages: most of the page
   get page1ItinerarySpace() {
-    return PDF_CONFIG.contentHeight - (
-      this.header +
-      this.clientInfo +
-      this.hotel +
-      this.inclusions +
-      this.pricing +
-      this.footer
-    );
+    return (
+      PDF_CONFIG.contentHeight -
+      (this.header +
+        this.clientInfo +
+        this.hotel +
+        this.inclusions +
+        this.pricing +
+        this.footer)
+    )
   },
   get continuationPageItinerarySpace() {
-    return PDF_CONFIG.contentHeight - this.header - this.footer;
+    return PDF_CONFIG.contentHeight - this.header - this.footer
   },
-} as const;
+} as const
 
 /**
  * Itinerary Day Entry Configuration
  */
 export const ITINERARY_CONFIG = {
-  dayNumberWidth: 50,        // Width of the "Day X" column
-  activitiesWidth: 450,      // Width of the activities text column
-  minDayHeight: 40,          // Minimum height per day entry
-  dayPadding: 8,             // Padding inside each day box
-  daySpacing: 5,             // Space between day entries
-} as const;
+  dayNumberWidth: 50, // Width of the "Day X" column
+  activitiesWidth: 450, // Width of the activities text column
+  minDayHeight: 40, // Minimum height per day entry
+  dayPadding: 8, // Padding inside each day box
+  daySpacing: 5, // Space between day entries
+} as const
 
 /**
  * Helper Functions
@@ -139,7 +140,7 @@ export const ITINERARY_CONFIG = {
  * @returns Y coordinate from bottom of page (pdf-lib format)
  */
 export function topToBottomY(topY: number): number {
-  return PDF_CONFIG.pageHeight - topY;
+  return PDF_CONFIG.pageHeight - topY
 }
 
 /**
@@ -149,7 +150,7 @@ export function topToBottomY(topY: number): number {
  * @returns Y coordinate from top of page
  */
 export function bottomToTopY(bottomY: number): number {
-  return PDF_CONFIG.pageHeight - bottomY;
+  return PDF_CONFIG.pageHeight - bottomY
 }
 
 /**
@@ -160,5 +161,5 @@ export function bottomToTopY(bottomY: number): number {
  * @returns Y position of the bottom of the section (from bottom of page, pdf-lib format)
  */
 export function sectionBottom(topY: number, height: number): number {
-  return topToBottomY(topY + height);
+  return topToBottomY(topY + height)
 }

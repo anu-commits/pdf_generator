@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useRef } from 'react';
 import { FlightDetails } from '@/lib/types/itinerary';
 import CharacterLimitInput from './CharacterLimitInput';
 
@@ -18,24 +18,28 @@ export default function FlightInput({
   onChange,
   maxFlights = 10
 }: FlightInputProps) {
+  const fileInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
   const handleAddFlight = () => {
     if (flights.length < maxFlights) {
       onChange([
         ...flights,
         {
+          airlineName: '',
+          airlineLogo: undefined,
           flightNumber: '',
+          cabin: 'Economy',
           departure: {
-            airport: '',
+            city: '',
             date: '',
             time: ''
           },
           arrival: {
-            airport: '',
+            city: '',
             date: '',
             time: ''
           },
-          duration: '',
-          cabin: 'Economy'
+          duration: ''
         }
       ]);
     }
@@ -59,6 +63,23 @@ export default function FlightInput({
       (flight as any)[field] = value;
     }
 
+    onChange(updatedFlights);
+  };
+
+  const handleLogoUpload = (index: number, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      const updatedFlights = [...flights];
+      updatedFlights[index].airlineLogo = base64;
+      onChange(updatedFlights);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveLogo = (index: number) => {
+    const updatedFlights = [...flights];
+    updatedFlights[index].airlineLogo = undefined;
     onChange(updatedFlights);
   };
 
@@ -123,110 +144,166 @@ export default function FlightInput({
                 Flight {index + 1}
               </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Airline Info Row */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                {/* Airline Logo */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Airline Logo
+                  </label>
+                  <input
+                    type="file"
+                    ref={(el) => { fileInputRefs.current[index] = el; }}
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleLogoUpload(index, file);
+                    }}
+                    className="hidden"
+                  />
+                  {flight.airlineLogo ? (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={flight.airlineLogo}
+                        alt="Airline logo"
+                        className="h-10 w-auto object-contain border rounded"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveLogo(index)}
+                        className="text-red-500 hover:text-red-700 text-sm"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRefs.current[index]?.click()}
+                      className="w-full px-3 py-2 border border-dashed border-gray-300 rounded-md text-gray-500 hover:border-amber-500 hover:text-amber-600 transition-colors text-sm"
+                    >
+                      Upload Logo
+                    </button>
+                  )}
+                </div>
+
+                {/* Airline Name */}
+                <CharacterLimitInput
+                  label="Airline Name"
+                  value={flight.airlineName}
+                  onChange={(value) => handleUpdateFlight(index, 'airlineName', value)}
+                  maxLength={50}
+                  placeholder="e.g., Thai AirAsia X"
+                  required
+                />
+
                 {/* Flight Number */}
                 <CharacterLimitInput
                   label="Flight Number"
                   value={flight.flightNumber}
                   onChange={(value) => handleUpdateFlight(index, 'flightNumber', value)}
                   maxLength={20}
-                  placeholder="e.g., Thai AirAsia X XJ-2911"
+                  placeholder="e.g., XJ-231"
                   required
                 />
+              </div>
 
-                {/* Cabin Class */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cabin Class <span className="text-red-500">*</span>
-                  </label>
-                  <select
-                    value={flight.cabin}
-                    onChange={(e) => handleUpdateFlight(index, 'cabin', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  >
-                    <option value="Economy">Economy</option>
-                    <option value="Premium Economy">Premium Economy</option>
-                    <option value="Business">Business</option>
-                    <option value="First Class">First Class</option>
-                  </select>
-                </div>
+              {/* Cabin Class */}
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Cabin Class <span className="text-red-500">*</span>
+                </label>
+                <select
+                  value={flight.cabin}
+                  onChange={(e) => handleUpdateFlight(index, 'cabin', e.target.value)}
+                  className="w-full md:w-1/3 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                >
+                  <option value="Economy">Economy</option>
+                  <option value="Premium Economy">Premium Economy</option>
+                  <option value="Business">Business</option>
+                  <option value="First Class">First Class</option>
+                </select>
               </div>
 
               {/* Departure and Arrival */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Departure */}
                 <div className="space-y-3">
-                  <h4 className="font-medium text-gray-700 text-sm">Departure</h4>
+                  <h4 className="font-medium text-gray-700 text-sm border-b pb-1">Departure</h4>
 
                   <CharacterLimitInput
-                    label="Airport"
-                    value={flight.departure.airport}
-                    onChange={(value) => handleUpdateFlight(index, 'departure.airport', value)}
+                    label="City"
+                    value={flight.departure.city}
+                    onChange={(value) => handleUpdateFlight(index, 'departure.city', value)}
                     maxLength={50}
                     placeholder="e.g., Delhi"
                     required
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={flight.departure.date}
-                      onChange={(e) => handleUpdateFlight(index, 'departure.date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={flight.departure.date}
+                        onChange={(e) => handleUpdateFlight(index, 'departure.date', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Time <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="time"
-                      value={flight.departure.time}
-                      onChange={(e) => handleUpdateFlight(index, 'departure.time', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Time <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        value={flight.departure.time}
+                        onChange={(e) => handleUpdateFlight(index, 'departure.time', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
                   </div>
                 </div>
 
                 {/* Arrival */}
                 <div className="space-y-3">
-                  <h4 className="font-medium text-gray-700 text-sm">Arrival</h4>
+                  <h4 className="font-medium text-gray-700 text-sm border-b pb-1">Arrival</h4>
 
                   <CharacterLimitInput
-                    label="Airport"
-                    value={flight.arrival.airport}
-                    onChange={(value) => handleUpdateFlight(index, 'arrival.airport', value)}
+                    label="City"
+                    value={flight.arrival.city}
+                    onChange={(value) => handleUpdateFlight(index, 'arrival.city', value)}
                     maxLength={50}
                     placeholder="e.g., Bangkok"
                     required
                   />
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Date <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      value={flight.arrival.date}
-                      onChange={(e) => handleUpdateFlight(index, 'arrival.date', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
-                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        value={flight.arrival.date}
+                        onChange={(e) => handleUpdateFlight(index, 'arrival.date', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Time <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="time"
-                      value={flight.arrival.time}
-                      onChange={(e) => handleUpdateFlight(index, 'arrival.time', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Time <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="time"
+                        value={flight.arrival.time}
+                        onChange={(e) => handleUpdateFlight(index, 'arrival.time', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

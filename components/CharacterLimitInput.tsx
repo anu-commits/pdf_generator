@@ -39,8 +39,9 @@ export default function CharacterLimitInput({
   onKeyPress,
   maxLength,
 }: CharacterLimitInputProps) {
-  const remaining = getRemainingChars(value, characterLimit);
-  const percentage = getCharLimitPercentage(value, characterLimit);
+  const finalCharacterLimit = maxLength || characterLimit;
+  const remaining = getRemainingChars(value, finalCharacterLimit);
+  const percentage = getCharLimitPercentage(value, finalCharacterLimit);
 
   // Color coding based on usage
   const getCounterColor = () => {
@@ -61,12 +62,10 @@ export default function CharacterLimitInput({
     const newValue = e.target.value;
 
     // Enforce character limit
-    if (newValue.length <= characterLimit) {
+    if (newValue.length <= finalCharacterLimit) {
       onChange(newValue);
     }
   };
-
-  const finalCharacterLimit = maxLength || characterLimit;
 
   const inputClasses = `
     w-full px-4 py-2 border rounded-lg
@@ -88,7 +87,7 @@ export default function CharacterLimitInput({
             className={`text-xs ${getCounterColor()}`}
             title={`${percentage.toFixed(0)}% of limit used`}
           >
-            {remaining} / {characterLimit}
+            {remaining} / {finalCharacterLimit}
           </span>
         </div>
       )}

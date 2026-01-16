@@ -29,7 +29,7 @@ export function renderPricingSection(
   const { startX, startY, pricing, textColor = LUXURY_COLORS.textDark } = options;
 
   const sectionWidth = 412; // Matching the design width
-  const rowHeight = 35; // Slightly taller rows
+  const rowHeight = 28; // Compact rows to fit on page
 
   let currentY = startY;
 
@@ -42,7 +42,7 @@ export function renderPricingSection(
     color: LUXURY_COLORS.gold
   });
 
-  currentY -= 40;
+  currentY -= 30;
 
   // Draw gold bar header
   page.drawRectangle({
@@ -63,6 +63,9 @@ export function renderPricingSection(
     { label: 'Total Amount', value: formatCurrency(pricing.total, pricing.currency), isBold: true }
   ];
 
+  // Use dark text color for rows (since they have light gray backgrounds)
+  const rowTextColor = rgb(0.2, 0.2, 0.2); // Dark gray for readability
+
   // Draw gray rows with alternating colors
   rows.forEach((row, index) => {
     const isTotal = index === rows.length - 1;
@@ -78,13 +81,13 @@ export function renderPricingSection(
       color: rowColor
     });
 
-    // Draw label
+    // Draw label (dark text for readability on light gray background)
     page.drawText(row.label, {
       x: startX + 20,
       y: currentY - rowHeight / 2 - 5,
       size: isTotal ? 12 : 11,
       font: row.isBold ? fonts.bodyBold : fonts.body,
-      color: textColor
+      color: rowTextColor
     });
 
     // Draw value (right-aligned)
@@ -97,13 +100,13 @@ export function renderPricingSection(
       y: currentY - rowHeight / 2 - 5,
       size: isTotal ? 12 : 11,
       font: row.isBold ? fonts.bodyBold : fonts.body,
-      color: isTotal ? LUXURY_COLORS.gold : textColor
+      color: isTotal ? LUXURY_COLORS.gold : rowTextColor
     });
 
     currentY -= rowHeight;
   });
 
-  currentY -= 30;
+  currentY -= 20;
 
   return currentY;
 }

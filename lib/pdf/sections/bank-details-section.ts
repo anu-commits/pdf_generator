@@ -25,10 +25,10 @@ export function renderBankDetailsSection(
   fonts: FontFamily,
   options: BankDetailsSectionOptions
 ): number {
-  const { startX, startY, bankDetails, textColor = LUXURY_COLORS.textDark } = options;
+  const { startX, startY, bankDetails } = options;
 
   const sectionWidth = 412; // Matching the design width
-  const rowHeight = 35; // Slightly taller rows
+  const rowHeight = 28; // Compact rows to fit on page
 
   let currentY = startY;
 
@@ -41,7 +41,7 @@ export function renderBankDetailsSection(
     color: LUXURY_COLORS.gold
   });
 
-  currentY -= 40;
+  currentY -= 30;
 
   // Draw gold bar header
   page.drawRectangle({
@@ -66,6 +66,9 @@ export function renderBankDetailsSection(
     rows.push({ label: 'IBAN', value: bankDetails.iban });
   }
 
+  // Use dark text color for rows (since they have light gray backgrounds)
+  const rowTextColor = rgb(0.2, 0.2, 0.2); // Dark gray for readability
+
   // Draw gray rows with alternating colors
   rows.forEach((row, index) => {
     // Alternating gray colors - darker and lighter
@@ -80,13 +83,13 @@ export function renderBankDetailsSection(
       color: rowColor
     });
 
-    // Draw label
+    // Draw label (dark text for readability on light gray background)
     page.drawText(row.label, {
       x: startX + 20,
       y: currentY - rowHeight / 2 - 5,
       size: 11,
       font: fonts.body,
-      color: textColor
+      color: rowTextColor
     });
 
     // Draw value (right-aligned)
@@ -96,13 +99,13 @@ export function renderBankDetailsSection(
       y: currentY - rowHeight / 2 - 5,
       size: 11,
       font: fonts.bodyBold,
-      color: textColor
+      color: rowTextColor
     });
 
     currentY -= rowHeight;
   });
 
-  currentY -= 30;
+  currentY -= 35;
 
   return currentY;
 }

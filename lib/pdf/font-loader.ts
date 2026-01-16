@@ -1,10 +1,15 @@
 /**
  * Font Loader for PDF Generation
  *
- * Handles loading custom fonts or falling back to standard PDF fonts.
+ * Loads custom fonts:
+ * - Headings: Inter
+ * - Body: Jost (Futura alternative)
  */
 
 import { PDFDocument, PDFFont, StandardFonts } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+import * as fs from 'fs';
+import * as path from 'path';
 
 /**
  * Font family with all weight variants
@@ -21,21 +26,61 @@ export interface FontFamily {
 
 /**
  * Load fonts for PDF generation
- * Attempts to load custom fonts, falls back to standard PDF fonts
+ * Loads Inter for headings, Jost for body text
  *
  * @param pdfDoc - The PDF document to embed fonts into
  * @returns Promise resolving to FontFamily with all font variants
  */
 export async function loadFonts(pdfDoc: PDFDocument): Promise<FontFamily> {
   try {
-    // For now, use standard fonts
-    // In the future, custom fonts can be added here
-    const fonts = await loadStandardFonts(pdfDoc);
+    // Load custom fonts (Inter for headings, Jost for body)
+    const fonts = await loadCustomFontsFromFiles(pdfDoc);
     return fonts;
   } catch (error) {
-    console.error('Error loading fonts, falling back to standard fonts:', error);
+    console.error('Error loading custom fonts, falling back to standard fonts:', error);
     return await loadStandardFonts(pdfDoc);
   }
+}
+
+/**
+ * Load custom fonts from files in public/fonts directory
+ */
+async function loadCustomFontsFromFiles(pdfDoc: PDFDocument): Promise<FontFamily> {
+  // Register fontkit to enable custom font embedding
+  pdfDoc.registerFontkit(fontkit);
+
+  const fontsDir = path.join(process.cwd(), 'public', 'fonts');
+
+  // Load Inter fonts for headings and convert Buffer to Uint8Array
+  const interRegular = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Inter-Regular.ttf')));
+  const interBold = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Inter-Bold.ttf')));
+  const interItalic = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Inter-Italic.ttf')));
+
+  // Load Jost fonts for body (Futura alternative) and convert Buffer to Uint8Array
+  const jostRegular = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Jost-Regular.ttf')));
+  const jostBold = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Jost-Bold.ttf')));
+  const jostItalic = new Uint8Array(fs.readFileSync(path.join(fontsDir, 'Jost-Italic.ttf')));
+
+  // Embed fonts
+  const [heading, headingBold, headingItalic, body, bodyBold, bodyItalic, mono] = await Promise.all([
+    pdfDoc.embedFont(interRegular),
+    pdfDoc.embedFont(interBold),
+    pdfDoc.embedFont(interItalic),
+    pdfDoc.embedFont(jostRegular),
+    pdfDoc.embedFont(jostBold),
+    pdfDoc.embedFont(jostItalic),
+    pdfDoc.embedFont(StandardFonts.Courier), // Keep mono as Courier
+  ]);
+
+  return {
+    heading,
+    headingBold,
+    headingItalic,
+    body,
+    bodyBold,
+    bodyItalic,
+    mono,
+  };
 }
 
 /**

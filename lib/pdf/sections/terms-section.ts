@@ -30,12 +30,12 @@ export function renderTermsSection(
 
   let currentY = startY;
 
-  // Draw "Terms and Conditions" header in gold (matching Figma design - serif font, larger size)
+  // Draw "Terms and Conditions" header in gold (Inter Bold font)
   page.drawText('Terms and Conditions', {
     x: startX,
     y: currentY,
     size: 36,
-    font: fonts.heading, // Times New Roman from Figma
+    font: fonts.headingBold, // Inter Bold for headings
     color: LUXURY_COLORS.gold
   });
 

@@ -30,12 +30,12 @@ export function renderInclusionsSection(
 
   let currentY = startY;
 
-  // Draw "Inclusions" header in gold (matching Figma design - serif font, larger size)
+  // Draw "Inclusions" header in gold (Inter Bold font)
   page.drawText('Inclusions', {
     x: startX,
     y: currentY,
     size: 36,
-    font: fonts.heading, // Times New Roman from Figma
+    font: fonts.headingBold, // Inter Bold for headings
     color: LUXURY_COLORS.gold
   });
 

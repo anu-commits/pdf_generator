@@ -1,5 +1,18 @@
 import type { Metadata } from 'next';
+import { Inter, Jost } from 'next/font/google';
 import './globals.css';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jost = Jost({
+  subsets: ['latin'],
+  variable: '--font-jost',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'Travel Itinerary PDF Generator',
@@ -12,8 +25,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" className={`${inter.variable} ${jost.variable}`}>
+      <body className="antialiased font-body">{children}</body>
     </html>
   );
 }
