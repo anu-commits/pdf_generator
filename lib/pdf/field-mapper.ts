@@ -26,6 +26,13 @@ import * as path from "path"
 const WHY_CHOOSE_US_IMAGE_PATH = "public/images/why-choose-us.png"
 const BASIC_DETAILS_TEMPLATE_PATH = "public/images/basic-details-template.png"
 
+// Footer CTA images
+const FOOTER_LOGO_PATH = "public/images/TLT-Logo-goldwebsite 2.png"
+const FACEBOOK_ICON_PATH = "public/images/facebook logo.png"
+const LINKEDIN_ICON_PATH = "public/images/linkedin.png"
+const PINTEREST_ICON_PATH = "public/images/pinterest.png"
+const INSTAGRAM_ICON_PATH = "public/images/instalogo.png"
+
 import { ItineraryData } from "../types/itinerary"
 import {
   LUXURY_COLORS,
@@ -72,7 +79,7 @@ export async function generateItineraryPDF(
     // Load fonts
     const fonts = await loadFonts(pdfDoc)
 
-    // Embed all images (hero, why choose us, day images, hotel images, airline logos)
+    // Embed all images (hero, why choose us, day images, hotel images, airline logos, footer)
     const {
       heroImage,
       whyChooseUsImage,
@@ -81,6 +88,8 @@ export async function generateItineraryPDF(
       dayImages,
       hotelImages,
       airlineLogos,
+      footerLogo,
+      socialIcons,
     } = await embedAllImages(pdfDoc, data)
 
     // Set background color based on dark mode
@@ -183,11 +192,11 @@ export async function generateItineraryPDF(
       itineraryPageManager.getPage().drawText("Itinerary", {
         x: startX,
         y: itineraryPageManager.getY(),
-        size: 22,
+        size: 36,
         font: fonts.headingBold,
         color: LUXURY_COLORS.gold,
       })
-      itineraryPageManager.moveDown(40)
+      itineraryPageManager.moveDown(60)
     }
 
     // Draw initial header on first itinerary page
@@ -278,7 +287,7 @@ export async function generateItineraryPDF(
         x: startX,
         y: inclusionsPageManager.getY(),
         size: 36,
-        font: fonts.heading,
+        font: fonts.headingBold,
         color: LUXURY_COLORS.gold,
       })
       inclusionsPageManager.moveDown(60)
@@ -299,7 +308,7 @@ export async function generateItineraryPDF(
           lineHeight: 1.5,
           itemSpacing: 10,
           sectionTitle: "Inclusions",
-          titleFont: fonts.heading,
+          titleFont: fonts.headingBold,
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 60,
@@ -320,7 +329,7 @@ export async function generateItineraryPDF(
         x: startX,
         y: inclusionsPageManager.getY(),
         size: 36,
-        font: fonts.heading,
+        font: fonts.headingBold,
         color: LUXURY_COLORS.gold,
       })
       inclusionsPageManager.moveDown(60)
@@ -341,7 +350,7 @@ export async function generateItineraryPDF(
           lineHeight: 1.5,
           itemSpacing: 10,
           sectionTitle: "Exclusions",
-          titleFont: fonts.heading,
+          titleFont: fonts.headingBold,
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 60,
@@ -374,7 +383,7 @@ export async function generateItineraryPDF(
         x: startX,
         y: termsPageManager.getY(),
         size: 36,
-        font: fonts.heading,
+        font: fonts.headingBold,
         color: LUXURY_COLORS.gold,
       })
       termsPageManager.moveDown(70)
@@ -395,7 +404,7 @@ export async function generateItineraryPDF(
           lineHeight: 1.64,
           itemSpacing: 18,
           sectionTitle: "Terms and Conditions",
-          titleFont: fonts.heading,
+          titleFont: fonts.headingBold,
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 70,
@@ -453,12 +462,17 @@ export async function generateItineraryPDF(
     }
 
     // Add footer with company name and CTA
-    renderFooterCTA(
-      pricingPage,
+    renderFooterCTA({
+      page: pricingPage,
+      pdfDoc,
       fonts,
-      data.companyName || "THE LUXE TRAILS",
-      80
-    )
+      yPosition: 80,
+      footerLogo,
+      socialIcons,
+      socialLinks: data.socialLinks,
+      websiteUrl: data.websiteUrl,
+      backgroundColor,
+    })
 
     // Add footer to all pages
     await addFooterToAllPages(pdfDoc, fonts, data.contactInfo, data.companyName)
@@ -490,11 +504,25 @@ async function embedAllImages(
   dayImages: Map<number, PDFImage>
   hotelImages: Map<number, PDFImage[]>
   airlineLogos: Map<number, PDFImage>
+  footerLogo?: PDFImage
+  socialIcons: {
+    facebook?: PDFImage
+    linkedin?: PDFImage
+    pinterest?: PDFImage
+    instagram?: PDFImage
+  }
 }> {
   let heroImage: PDFImage | undefined = undefined
   let whyChooseUsImage: PDFImage | undefined = undefined
   let basicDetailsTemplate: PDFImage | undefined = undefined
   let destinationImage: PDFImage | undefined = undefined
+  let footerLogo: PDFImage | undefined = undefined
+  const socialIcons: {
+    facebook?: PDFImage
+    linkedin?: PDFImage
+    pinterest?: PDFImage
+    instagram?: PDFImage
+  } = {}
   const dayImages = new Map<number, PDFImage>()
   const hotelImages = new Map<number, PDFImage[]>()
   const airlineLogos = new Map<number, PDFImage>()
@@ -612,6 +640,39 @@ async function embedAllImages(
     }
   }
 
+  // Embed footer logo
+  const footerLogoPath = path.join(process.cwd(), FOOTER_LOGO_PATH)
+  if (fs.existsSync(footerLogoPath)) {
+    try {
+      const imageBuffer = fs.readFileSync(footerLogoPath)
+      const base64Image = `data:image/png;base64,${imageBuffer.toString("base64")}`
+      footerLogo = await embedImageInPDF(pdfDoc, base64Image)
+    } catch (error) {
+      console.error("Failed to embed footer logo:", error)
+    }
+  }
+
+  // Embed social media icons
+  const socialIconPaths = [
+    { key: "facebook", path: FACEBOOK_ICON_PATH },
+    { key: "linkedin", path: LINKEDIN_ICON_PATH },
+    { key: "pinterest", path: PINTEREST_ICON_PATH },
+    { key: "instagram", path: INSTAGRAM_ICON_PATH },
+  ] as const
+
+  for (const { key, path: iconPath } of socialIconPaths) {
+    const fullPath = path.join(process.cwd(), iconPath)
+    if (fs.existsSync(fullPath)) {
+      try {
+        const imageBuffer = fs.readFileSync(fullPath)
+        const base64Image = `data:image/png;base64,${imageBuffer.toString("base64")}`
+        socialIcons[key] = await embedImageInPDF(pdfDoc, base64Image)
+      } catch (error) {
+        console.error(`Failed to embed ${key} icon:`, error)
+      }
+    }
+  }
+
   return {
     heroImage,
     whyChooseUsImage,
@@ -620,28 +681,104 @@ async function embedAllImages(
     dayImages,
     hotelImages,
     airlineLogos,
+    footerLogo,
+    socialIcons,
   }
 }
 
 /**
- * Render footer CTA section on last page
+ * Add a clickable link annotation to a PDF page
  */
-function renderFooterCTA(
+function addLinkAnnotation(
   page: PDFPage,
-  fonts: FontFamily,
-  companyName: string,
-  yPosition: number
+  pdfDoc: PDFDocument,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  url: string
 ): void {
+  const linkAnnotation = pdfDoc.context.obj({
+    Type: "Annot",
+    Subtype: "Link",
+    Rect: [x, y, x + width, y + height],
+    Border: [0, 0, 0],
+    A: {
+      Type: "Action",
+      S: "URI",
+      URI: pdfDoc.context.obj(url),
+    },
+  })
+
+  const annots = page.node.get(pdfDoc.context.obj("Annots"))
+  if (annots) {
+    // Page already has annotations, add to existing array
+    const annotsArray = pdfDoc.context.lookup(annots)
+    if (annotsArray && "push" in annotsArray) {
+      ;(annotsArray as any).push(linkAnnotation)
+    }
+  } else {
+    // Create new annotations array
+    page.node.set(pdfDoc.context.obj("Annots"), pdfDoc.context.obj([linkAnnotation]))
+  }
+}
+
+/**
+ * Footer CTA options
+ */
+interface FooterCTAOptions {
+  page: PDFPage
+  pdfDoc: PDFDocument
+  fonts: FontFamily
+  yPosition: number
+  footerLogo?: PDFImage
+  socialIcons: {
+    facebook?: PDFImage
+    linkedin?: PDFImage
+    pinterest?: PDFImage
+    instagram?: PDFImage
+  }
+  socialLinks?: {
+    facebook?: string
+    linkedin?: string
+    pinterest?: string
+    instagram?: string
+  }
+  websiteUrl?: string
+  backgroundColor?: any // RGB color for icon backgrounds
+}
+
+/**
+ * Render footer CTA section on last page with images and clickable links
+ */
+function renderFooterCTA(options: FooterCTAOptions): void {
+  const {
+    page,
+    pdfDoc,
+    fonts,
+    yPosition,
+    footerLogo,
+    socialIcons,
+    socialLinks,
+    websiteUrl,
+    backgroundColor,
+  } = options
+
   const { width } = page.getSize()
 
-  // Draw company name/logo on left
-  page.drawText(companyName, {
-    x: LUXURY_LAYOUT.pageMargin,
-    y: yPosition,
-    size: 12,
-    font: fonts.bodyBold,
-    color: LUXURY_COLORS.gold,
-  })
+  // Draw logo on left (or fallback to text)
+  const logoX = LUXURY_LAYOUT.pageMargin
+  const logoHeight = 20
+  if (footerLogo) {
+    const aspectRatio = footerLogo.width / footerLogo.height
+    const logoWidth = logoHeight * aspectRatio
+    page.drawImage(footerLogo, {
+      x: logoX,
+      y: yPosition - 5,
+      width: logoWidth,
+      height: logoHeight,
+    })
+  }
 
   // Draw "Ready to get started?" in center
   const ctaText = "Ready to get started?"
@@ -654,57 +791,103 @@ function renderFooterCTA(
     color: LUXURY_COLORS.gold,
   })
 
-  // Draw button on right
-  const buttonWidth = 100
-  const buttonHeight = 28
+  // Draw button on right with rounded corners effect
+  const buttonWidth = 110
+  const buttonHeight = 30
   const buttonX = width - LUXURY_LAYOUT.pageMargin - buttonWidth
+  const buttonY = yPosition - 10
 
+  // Draw button background
   page.drawRectangle({
     x: buttonX,
-    y: yPosition - 8,
+    y: buttonY,
     width: buttonWidth,
     height: buttonHeight,
     color: LUXURY_COLORS.gold,
+    borderColor: LUXURY_COLORS.gold,
+    borderWidth: 1,
   })
 
+  // Draw button text
   const buttonText = "Book with Us"
-  const buttonTextWidth = fonts.bodyBold.widthOfTextAtSize(buttonText, 10)
+  const buttonTextWidth = fonts.bodyBold.widthOfTextAtSize(buttonText, 11)
   page.drawText(buttonText, {
     x: buttonX + (buttonWidth - buttonTextWidth) / 2,
-    y: yPosition,
-    size: 10,
+    y: buttonY + 10,
+    size: 11,
     font: fonts.bodyBold,
     color: LUXURY_COLORS.white,
   })
 
-  // Draw social media icons below (as circles with initials)
-  const iconY = yPosition - 35
-  const iconSize = 14
-  const iconSpacing = 20
-  const iconsStartX = width - LUXURY_LAYOUT.pageMargin - 4 * iconSpacing
-  const socialIcons = ["f", "in", "P", "O"] // Facebook, LinkedIn, Pinterest, Instagram
+  // Add clickable link annotation for button
+  if (websiteUrl) {
+    addLinkAnnotation(page, pdfDoc, buttonX, buttonY, buttonWidth, buttonHeight, websiteUrl)
+  }
 
-  socialIcons.forEach((icon, index) => {
+  // Draw social media icons below
+  const iconY = yPosition - 40
+  const iconSize = 18
+  const iconSpacing = 25
+  const socialIconsList = [
+    { key: "facebook" as const, image: socialIcons.facebook, url: socialLinks?.facebook },
+    { key: "linkedin" as const, image: socialIcons.linkedin, url: socialLinks?.linkedin },
+    { key: "pinterest" as const, image: socialIcons.pinterest, url: socialLinks?.pinterest },
+    { key: "instagram" as const, image: socialIcons.instagram, url: socialLinks?.instagram },
+  ]
+
+  const iconsStartX = width - LUXURY_LAYOUT.pageMargin - socialIconsList.length * iconSpacing
+
+  socialIconsList.forEach((icon, index) => {
     const iconX = iconsStartX + index * iconSpacing
 
-    // Draw circle outline
-    page.drawCircle({
-      x: iconX + iconSize / 2,
-      y: iconY + iconSize / 2,
-      size: iconSize / 2,
-      borderColor: LUXURY_COLORS.gold,
-      borderWidth: 1,
-    })
+    if (icon.image) {
+      // Draw background rectangle to cover PNG transparency
+      if (backgroundColor) {
+        page.drawRectangle({
+          x: iconX - 1,
+          y: iconY - 1,
+          width: iconSize + 2,
+          height: iconSize + 2,
+          color: backgroundColor,
+        })
+      }
+      // Draw the actual icon image
+      page.drawImage(icon.image, {
+        x: iconX,
+        y: iconY,
+        width: iconSize,
+        height: iconSize,
+      })
+    } else {
+      // Fallback: Draw circle with letter
+      const fallbackLetters: Record<string, string> = {
+        facebook: "f",
+        linkedin: "in",
+        pinterest: "P",
+        instagram: "O",
+      }
+      page.drawCircle({
+        x: iconX + iconSize / 2,
+        y: iconY + iconSize / 2,
+        size: iconSize / 2,
+        borderColor: LUXURY_COLORS.gold,
+        borderWidth: 1,
+      })
+      const letter = fallbackLetters[icon.key] || "?"
+      const letterWidth = fonts.body.widthOfTextAtSize(letter, 8)
+      page.drawText(letter, {
+        x: iconX + (iconSize - letterWidth) / 2,
+        y: iconY + 5,
+        size: 8,
+        font: fonts.body,
+        color: LUXURY_COLORS.gold,
+      })
+    }
 
-    // Draw icon letter
-    const letterWidth = fonts.body.widthOfTextAtSize(icon, 8)
-    page.drawText(icon, {
-      x: iconX + (iconSize - letterWidth) / 2,
-      y: iconY + 4,
-      size: 8,
-      font: fonts.body,
-      color: LUXURY_COLORS.gold,
-    })
+    // Add clickable link for social icon
+    if (icon.url) {
+      addLinkAnnotation(page, pdfDoc, iconX, iconY, iconSize, iconSize, icon.url)
+    }
   })
 }
 

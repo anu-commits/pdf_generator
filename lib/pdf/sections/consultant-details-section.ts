@@ -7,12 +7,13 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { FontFamily } from '../font-loader';
 import { ConsultantDetails } from '../../types/itinerary';
-import { LUXURY_COLORS } from '../../config/luxury-design-config';
+import { LUXURY_COLORS, LUXURY_LAYOUT } from '../../config/luxury-design-config';
 
 export interface ConsultantDetailsSectionOptions {
   startX: number;
   startY: number;
   consultantDetails: ConsultantDetails;
+  maxWidth?: number;
 }
 
 /**
@@ -24,9 +25,9 @@ export function renderConsultantDetailsSection(
   fonts: FontFamily,
   options: ConsultantDetailsSectionOptions
 ): number {
-  const { startX, startY, consultantDetails } = options;
+  const { startX, startY, consultantDetails, maxWidth } = options;
 
-  const sectionWidth = 412; // Matching the design width
+  const sectionWidth = maxWidth || LUXURY_LAYOUT.content.width; // Use content width for equal margins
   const rowHeight = 28; // Compact rows to fit on page
 
   let currentY = startY;

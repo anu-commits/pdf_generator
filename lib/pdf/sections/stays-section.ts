@@ -59,12 +59,12 @@ export function renderStaysSection(
   currentPage.drawText("Our Stays", {
     x: startX,
     y: currentY,
-    size: 22,
+    size: 36,
     font: fonts.headingBold,
     color: LUXURY_COLORS.gold,
   })
 
-  currentY -= 40
+  currentY -= 60
 
   if (hotels.length === 0) {
     currentPage.drawText("No hotels added", {
@@ -113,12 +113,12 @@ export function renderStaysSection(
         currentPage.drawText("Our Stays", {
           x: startX,
           y: currentY,
-          size: 22,
+          size: 36,
           font: fonts.headingBold,
           color: LUXURY_COLORS.gold,
         })
 
-        currentY -= 40
+        currentY -= 60
         cardY = currentY
         cardX = startX
       }

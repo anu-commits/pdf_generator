@@ -1,6 +1,7 @@
 import { PDFPage, PDFImage, rgb } from "pdf-lib"
 import { FontFamily } from "../font-loader"
 import { FlightDetails } from "../../types/itinerary"
+import { LUXURY_COLORS } from "../../config/luxury-design-config"
 
 // -- Light Mode Theme --
 const theme = {
@@ -118,12 +119,12 @@ export function renderFlightsSection(
   page.drawText("Flights", {
     x: startX,
     y: currentY,
-    size: 32,
+    size: 36,
     font: fonts.headingBold, // Inter Bold for headings
-    color: theme.titleMain,
+    color: LUXURY_COLORS.gold,
   })
 
-  currentY -= 45
+  currentY -= 60
 
   if (!flights.length) {
     page.drawText("No flights added", {

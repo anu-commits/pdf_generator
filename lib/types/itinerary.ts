@@ -172,6 +172,15 @@ export interface ItineraryData {
   companyName?: string;
   logo?: string;            // Base64 encoded logo image
 
+  // Social links and website (optional)
+  socialLinks?: {
+    facebook?: string;
+    linkedin?: string;
+    pinterest?: string;
+    instagram?: string;
+  };
+  websiteUrl?: string;      // Website URL for "Book with Us" button
+
   // New design fields
   heroImage?: string;       // Base64 encoded hero/cover image
   whyChooseUsImage?: string; // Base64 encoded why choose us page image

@@ -47,12 +47,12 @@ export function renderItinerarySection(
   page.drawText("Itinerary", {
     x: startX,
     y: currentY,
-    size: 22,
+    size: 36,
     font: fonts.headingBold,
     color: LUXURY_COLORS.gold,
   })
 
-  currentY -= 40
+  currentY -= 60
 
   // Track the first gold bar position for continuous vertical line
   let firstGoldBarY: number | null = null

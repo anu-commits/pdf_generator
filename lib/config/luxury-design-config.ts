@@ -106,8 +106,8 @@ export const LUXURY_FONT_SIZES = {
  */
 export const LUXURY_SPACING = {
   // Page margins
-  pageMargin: 40,
-  pageMarginTop: 50,
+  pageMargin: 49,
+  pageMarginTop: 68,
   pageMarginBottom: 40,
 
   // Section spacing
@@ -140,16 +140,16 @@ export const LUXURY_LAYOUT = {
   },
 
   // Page margins
-  pageMargin: 40,
-  pageMarginTop: 50,
+  pageMargin: 49,
+  pageMarginTop: 68,
   pageMarginBottom: 40,
 
   // Content area (after margins)
   content: {
-    width: 515.28, // 595.28 - (40 * 2)
-    height: 751.89, // 841.89 - (50 + 40)
-    startX: 40,
-    startY: 40,
+    width: 497.28, // 595.28 - (49 * 2)
+    height: 733.89, // 841.89 - (68 + 40)
+    startX: 49,
+    startY: 49,
   },
 
   // Header

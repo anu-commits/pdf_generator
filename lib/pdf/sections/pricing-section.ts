@@ -7,7 +7,7 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { FontFamily } from '../font-loader';
 import { PricingDetails } from '../../types/itinerary';
-import { LUXURY_COLORS, LUXURY_FONT_SIZES } from '../../config/luxury-design-config';
+import { LUXURY_COLORS, LUXURY_FONT_SIZES, LUXURY_LAYOUT } from '../../config/luxury-design-config';
 import { formatCurrency } from '../layout-primitives';
 
 export interface PricingSectionOptions {
@@ -15,6 +15,7 @@ export interface PricingSectionOptions {
   startY: number;
   pricing: PricingDetails;
   textColor?: any;
+  maxWidth?: number;
 }
 
 /**
@@ -26,9 +27,9 @@ export function renderPricingSection(
   fonts: FontFamily,
   options: PricingSectionOptions
 ): number {
-  const { startX, startY, pricing, textColor = LUXURY_COLORS.textDark } = options;
+  const { startX, startY, pricing, textColor = LUXURY_COLORS.textDark, maxWidth } = options;
 
-  const sectionWidth = 412; // Matching the design width
+  const sectionWidth = maxWidth || LUXURY_LAYOUT.content.width; // Use content width for equal margins
   const rowHeight = 28; // Compact rows to fit on page
 
   let currentY = startY;

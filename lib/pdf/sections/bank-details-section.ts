@@ -7,13 +7,14 @@
 import { PDFPage, rgb } from 'pdf-lib';
 import { FontFamily } from '../font-loader';
 import { BankDetails } from '../../types/itinerary';
-import { LUXURY_COLORS } from '../../config/luxury-design-config';
+import { LUXURY_COLORS, LUXURY_LAYOUT } from '../../config/luxury-design-config';
 
 export interface BankDetailsSectionOptions {
   startX: number;
   startY: number;
   bankDetails: BankDetails;
   textColor?: any;
+  maxWidth?: number;
 }
 
 /**
@@ -25,9 +26,9 @@ export function renderBankDetailsSection(
   fonts: FontFamily,
   options: BankDetailsSectionOptions
 ): number {
-  const { startX, startY, bankDetails } = options;
+  const { startX, startY, bankDetails, maxWidth } = options;
 
-  const sectionWidth = 412; // Matching the design width
+  const sectionWidth = maxWidth || LUXURY_LAYOUT.content.width; // Use content width for equal margins
   const rowHeight = 28; // Compact rows to fit on page
 
   let currentY = startY;

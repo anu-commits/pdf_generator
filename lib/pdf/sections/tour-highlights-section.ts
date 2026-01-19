@@ -34,12 +34,12 @@ export function renderTourHighlightsSection(
   page.drawText('Tour Highlights', {
     x: startX,
     y: currentY,
-    size: 22,
+    size: 36,
     font: fonts.headingBold,
     color: LUXURY_COLORS.gold
   });
 
-  currentY -= 40;
+  currentY -= 60;
 
   // Draw bullet list
   if (highlights.length > 0) {
