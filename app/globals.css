@@ -2,6 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* React Calendar styles */
+@import 'react-calendar/dist/Calendar.css';
+
+/* Custom calendar styling */
+.date-picker-calendar {
+  @apply border-0 rounded-lg font-body;
+}
+
+.date-picker-calendar .react-calendar__tile--active {
+  @apply bg-amber-500 text-white;
+}
+
+.date-picker-calendar .react-calendar__tile--active:hover {
+  @apply bg-amber-600;
+}
+
+.date-picker-calendar .react-calendar__tile:hover {
+  @apply bg-amber-100;
+}
+
+.date-picker-calendar .react-calendar__navigation button:hover {
+  @apply bg-amber-100;
+}
+
+.date-picker-calendar .react-calendar__tile--now {
+  @apply bg-amber-50;
+}
+
 @layer base {
   body {
     @apply bg-gray-50 text-gray-900 font-body;

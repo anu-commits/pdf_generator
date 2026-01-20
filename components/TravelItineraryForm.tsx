@@ -27,6 +27,7 @@ import BankDetailsInput from "./BankDetailsInput"
 import ListBuilder from "./ListBuilder"
 import ImageUploadInput from "./ImageUploadInput"
 import PDFPreview from "./PDFPreview"
+import DatePicker from "./DatePicker"
 
 export default function TravelItineraryForm() {
   const [isGenerating, setIsGenerating] = useState(false)
@@ -202,6 +203,10 @@ export default function TravelItineraryForm() {
       "Experience authentic Egyptian cuisine and culture",
       "Shop at traditional bazaars and markets",
     ],
+
+    // Section visibility toggles
+    showFlights: true,
+    showHotels: true,
   })
 
   // Client Information Handlers
@@ -300,6 +305,15 @@ export default function TravelItineraryForm() {
   // Hotel Handlers
   const handleHotelsChange = (hotels: HotelStay[]) => {
     setFormData({ ...formData, hotels })
+  }
+
+  // Section Visibility Handlers
+  const handleShowFlightsToggle = () => {
+    setFormData({ ...formData, showFlights: !formData.showFlights })
+  }
+
+  const handleShowHotelsToggle = () => {
+    setFormData({ ...formData, showHotels: !formData.showHotels })
   }
 
   // Inclusions/Exclusions Handlers
@@ -596,31 +610,19 @@ export default function TravelItineraryForm() {
               required={true}
             />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Travel Start Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={formData.travelDates.start}
-                onChange={(e) => handleTravelDateStartChange(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
+            <DatePicker
+              label="Travel Start Date"
+              value={formData.travelDates.start}
+              onChange={handleTravelDateStartChange}
+              required
+            />
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Travel End Date <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="date"
-                value={formData.travelDates.end}
-                onChange={(e) => handleTravelDateEndChange(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-              />
-            </div>
+            <DatePicker
+              label="Travel End Date"
+              value={formData.travelDates.end}
+              onChange={handleTravelDateEndChange}
+              required
+            />
 
             <CharacterLimitInput
               value={formData.bookingRef}
@@ -635,13 +637,38 @@ export default function TravelItineraryForm() {
 
         {/* Flights Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
-            Flights
-          </h2>
-          <FlightInput
-            flights={formData.flights}
-            onChange={handleFlightsChange}
-          />
+          <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Flights
+            </h2>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <span className="text-sm text-gray-600">Include in PDF</span>
+              <button
+                type="button"
+                onClick={handleShowFlightsToggle}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  formData.showFlights ? 'bg-amber-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                    formData.showFlights ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </label>
+          </div>
+          {formData.showFlights && (
+            <FlightInput
+              flights={formData.flights}
+              onChange={handleFlightsChange}
+            />
+          )}
+          {!formData.showFlights && (
+            <p className="text-gray-500 italic text-center py-4">
+              Flights section will not be included in the PDF
+            </p>
+          )}
         </section>
 
         {/* Day-by-Day Itinerary Section */}
@@ -671,13 +698,38 @@ export default function TravelItineraryForm() {
 
         {/* Hotels Section */}
         <section className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4 border-b border-gray-200 pb-2">
-            Hotels / Accommodations
-          </h2>
-          <HotelStayInput
-            hotels={formData.hotels}
-            onChange={handleHotelsChange}
-          />
+          <div className="flex items-center justify-between mb-4 border-b border-gray-200 pb-2">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Hotels / Accommodations
+            </h2>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <span className="text-sm text-gray-600">Include in PDF</span>
+              <button
+                type="button"
+                onClick={handleShowHotelsToggle}
+                className={`relative w-12 h-6 rounded-full transition-colors ${
+                  formData.showHotels ? 'bg-amber-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                    formData.showHotels ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </label>
+          </div>
+          {formData.showHotels && (
+            <HotelStayInput
+              hotels={formData.hotels}
+              onChange={handleHotelsChange}
+            />
+          )}
+          {!formData.showHotels && (
+            <p className="text-gray-500 italic text-center py-4">
+              Hotels section will not be included in the PDF
+            </p>
+          )}
         </section>
 
         {/* Inclusions Section */}
@@ -865,7 +917,7 @@ export default function TravelItineraryForm() {
         </section>
 
         {/* Dark Mode Toggle */}
-        <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+        {/* <section className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             PDF Theme
           </h2>
@@ -885,7 +937,7 @@ export default function TravelItineraryForm() {
               {darkMode ? "(Black background with white text)" : "(White background with dark text)"}
             </span>
           </div>
-        </section>
+        </section> */}
 
         {/* Submit Button */}
         <div className="flex justify-center pt-6">

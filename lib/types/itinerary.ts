@@ -189,6 +189,10 @@ export interface ItineraryData {
   basicDetailsImage?: string; // Base64 encoded basic details page image
   tourHighlights?: string[]; // Array of tour highlight bullet points
 
+  // Section visibility toggles
+  showFlights?: boolean;      // Whether to include flights page in PDF
+  showHotels?: boolean;       // Whether to include hotels page in PDF
+
   // Legacy fields - kept for backwards compatibility during migration
   /** @deprecated Use hotels array instead */
   hotel?: HotelDetails;

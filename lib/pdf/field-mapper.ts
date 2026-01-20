@@ -28,10 +28,10 @@ const BASIC_DETAILS_TEMPLATE_PATH = "public/images/basic-details-template.png"
 
 // Footer CTA images
 const FOOTER_LOGO_PATH = "public/images/TLT-Logo-goldwebsite 2.png"
-const FACEBOOK_ICON_PATH = "public/images/facebook logo.png"
+const FACEBOOK_ICON_PATH = "public/images/facebook.png"
 const LINKEDIN_ICON_PATH = "public/images/linkedin.png"
 const PINTEREST_ICON_PATH = "public/images/pinterest.png"
-const INSTAGRAM_ICON_PATH = "public/images/instalogo.png"
+const INSTAGRAM_ICON_PATH = "public/images/instagram.png"
 
 import { ItineraryData } from "../types/itinerary"
 import {
@@ -52,9 +52,7 @@ import { renderHeroSection } from "./sections/hero-section"
 import { renderBasicDetailsSection } from "./sections/basic-details-section"
 import { renderTourHighlightsSection } from "./sections/tour-highlights-section"
 import { renderWhyChooseUsSection } from "./sections/why-choose-us-section"
-import {
-  renderPaginatedItineraryDay,
-} from "./sections/itinerary-section"
+import { renderPaginatedItineraryDay } from "./sections/itinerary-section"
 import { renderFlightsSection } from "./sections/flights-section"
 import { renderStaysSection } from "./sections/stays-section"
 import { renderPricingSection } from "./sections/pricing-section"
@@ -70,7 +68,7 @@ import { renderConsultantDetailsSection } from "./sections/consultant-details-se
  */
 export async function generateItineraryPDF(
   data: ItineraryData,
-  darkMode: boolean = true
+  darkMode: boolean = true,
 ): Promise<Uint8Array> {
   try {
     // Initialize PDF document
@@ -111,9 +109,10 @@ export async function generateItineraryPDF(
     // Draw background (will be covered by hero image if provided)
     drawPageBackground(page1, backgroundColor)
 
-    // Render hero page with company name, hero image, and tour details overlay
+    // Render hero page with company logo, hero image, and tour details overlay
     renderHeroSection(page1, fonts, {
       heroImage,
+      companyLogo: footerLogo,
       companyName: data.companyName || "THE LUXE TRAILS",
       destination: data.destination || "Luxury Travel Experience",
       duration: data.basicDetails?.travelDates,
@@ -221,12 +220,13 @@ export async function generateItineraryPDF(
         textColor,
         isLastDay,
         drawItineraryHeader,
-        isFirstDay // First day already has a page with header
+        isFirstDay, // First day already has a page with header
       )
     }
 
     // ====== NEXT PAGE(S): Our Stays (with pagination) ======
-    if (data.hotels && data.hotels.length > 0) {
+    // Only include if showHotels is not explicitly false
+    if (data.showHotels !== false && data.hotels && data.hotels.length > 0) {
       const staysPage = pdfDoc.addPage([
         LUXURY_LAYOUT.page.width,
         LUXURY_LAYOUT.page.height,
@@ -247,16 +247,16 @@ export async function generateItineraryPDF(
     }
 
     // ====== NEXT PAGE: Flights (Separate Page) ======
-    const flightsPage = pdfDoc.addPage([
-      LUXURY_LAYOUT.page.width,
-      LUXURY_LAYOUT.page.height,
-    ])
-    drawPageBackground(flightsPage, backgroundColor)
+    // Only include if showFlights is not explicitly false
+    if (data.showFlights !== false && data.flights && data.flights.length > 0) {
+      const flightsPage = pdfDoc.addPage([
+        LUXURY_LAYOUT.page.width,
+        LUXURY_LAYOUT.page.height,
+      ])
+      drawPageBackground(flightsPage, backgroundColor)
 
-    currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop
+      currentY = LUXURY_LAYOUT.page.height - LUXURY_LAYOUT.pageMarginTop
 
-    // Render Flights
-    if (data.flights && data.flights.length > 0) {
       currentY = renderFlightsSection(flightsPage, fonts, {
         startX,
         startY: currentY,
@@ -312,7 +312,7 @@ export async function generateItineraryPDF(
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 60,
-        }
+        },
       )
     }
 
@@ -354,7 +354,7 @@ export async function generateItineraryPDF(
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 60,
-        }
+        },
       )
     }
 
@@ -408,7 +408,7 @@ export async function generateItineraryPDF(
           titleSize: 36,
           titleColor: LUXURY_COLORS.gold,
           titleSpacing: 70,
-        }
+        },
       )
     }
 
@@ -485,7 +485,7 @@ export async function generateItineraryPDF(
     throw new Error(
       `Failed to generate PDF: ${
         error instanceof Error ? error.message : "Unknown error"
-      }`
+      }`,
     )
   }
 }
@@ -495,7 +495,7 @@ export async function generateItineraryPDF(
  */
 async function embedAllImages(
   pdfDoc: PDFDocument,
-  data: ItineraryData
+  data: ItineraryData,
 ): Promise<{
   heroImage?: PDFImage
   whyChooseUsImage?: PDFImage
@@ -539,13 +539,13 @@ async function embedAllImages(
   // Embed Why Choose Us image from file
   const whyChooseUsImagePath = path.join(
     process.cwd(),
-    WHY_CHOOSE_US_IMAGE_PATH
+    WHY_CHOOSE_US_IMAGE_PATH,
   )
   if (fs.existsSync(whyChooseUsImagePath)) {
     try {
       const imageBuffer = fs.readFileSync(whyChooseUsImagePath)
       const base64Image = `data:image/png;base64,${imageBuffer.toString(
-        "base64"
+        "base64",
       )}`
       whyChooseUsImage = await embedImageInPDF(pdfDoc, base64Image)
     } catch (error) {
@@ -556,13 +556,13 @@ async function embedAllImages(
   // Embed Basic Details template image from file
   const basicDetailsTemplatePath = path.join(
     process.cwd(),
-    BASIC_DETAILS_TEMPLATE_PATH
+    BASIC_DETAILS_TEMPLATE_PATH,
   )
   if (fs.existsSync(basicDetailsTemplatePath)) {
     try {
       const imageBuffer = fs.readFileSync(basicDetailsTemplatePath)
       const base64Image = `data:image/png;base64,${imageBuffer.toString(
-        "base64"
+        "base64",
       )}`
       basicDetailsTemplate = await embedImageInPDF(pdfDoc, base64Image)
     } catch (error) {
@@ -575,15 +575,15 @@ async function embedAllImages(
     try {
       console.log(
         "Embedding destination image, data length:",
-        data.basicDetails.destinationImage.length
+        data.basicDetails.destinationImage.length,
       )
       destinationImage = await embedImageInPDF(
         pdfDoc,
-        data.basicDetails.destinationImage
+        data.basicDetails.destinationImage,
       )
       console.log(
         "Destination image embedded successfully:",
-        !!destinationImage
+        !!destinationImage,
       )
     } catch (error) {
       console.error("Failed to embed destination image:", error)
@@ -696,7 +696,7 @@ function addLinkAnnotation(
   y: number,
   width: number,
   height: number,
-  url: string
+  url: string,
 ): void {
   const linkAnnotation = pdfDoc.context.obj({
     Type: "Annot",
@@ -719,7 +719,10 @@ function addLinkAnnotation(
     }
   } else {
     // Create new annotations array
-    page.node.set(pdfDoc.context.obj("Annots"), pdfDoc.context.obj([linkAnnotation]))
+    page.node.set(
+      pdfDoc.context.obj("Annots"),
+      pdfDoc.context.obj([linkAnnotation]),
+    )
   }
 }
 
@@ -761,7 +764,6 @@ function renderFooterCTA(options: FooterCTAOptions): void {
     socialIcons,
     socialLinks,
     websiteUrl,
-    backgroundColor,
   } = options
 
   const { width } = page.getSize()
@@ -821,7 +823,15 @@ function renderFooterCTA(options: FooterCTAOptions): void {
 
   // Add clickable link annotation for button
   if (websiteUrl) {
-    addLinkAnnotation(page, pdfDoc, buttonX, buttonY, buttonWidth, buttonHeight, websiteUrl)
+    addLinkAnnotation(
+      page,
+      pdfDoc,
+      buttonX,
+      buttonY,
+      buttonWidth,
+      buttonHeight,
+      websiteUrl,
+    )
   }
 
   // Draw social media icons below
@@ -829,29 +839,36 @@ function renderFooterCTA(options: FooterCTAOptions): void {
   const iconSize = 18
   const iconSpacing = 25
   const socialIconsList = [
-    { key: "facebook" as const, image: socialIcons.facebook, url: socialLinks?.facebook },
-    { key: "linkedin" as const, image: socialIcons.linkedin, url: socialLinks?.linkedin },
-    { key: "pinterest" as const, image: socialIcons.pinterest, url: socialLinks?.pinterest },
-    { key: "instagram" as const, image: socialIcons.instagram, url: socialLinks?.instagram },
+    {
+      key: "facebook" as const,
+      image: socialIcons.facebook,
+      url: socialLinks?.facebook,
+    },
+    {
+      key: "linkedin" as const,
+      image: socialIcons.linkedin,
+      url: socialLinks?.linkedin,
+    },
+    {
+      key: "pinterest" as const,
+      image: socialIcons.pinterest,
+      url: socialLinks?.pinterest,
+    },
+    {
+      key: "instagram" as const,
+      image: socialIcons.instagram,
+      url: socialLinks?.instagram,
+    },
   ]
 
-  const iconsStartX = width - LUXURY_LAYOUT.pageMargin - socialIconsList.length * iconSpacing
+  const iconsStartX =
+    width - LUXURY_LAYOUT.pageMargin - socialIconsList.length * iconSpacing
 
   socialIconsList.forEach((icon, index) => {
     const iconX = iconsStartX + index * iconSpacing
 
     if (icon.image) {
-      // Draw background rectangle to cover PNG transparency
-      if (backgroundColor) {
-        page.drawRectangle({
-          x: iconX - 1,
-          y: iconY - 1,
-          width: iconSize + 2,
-          height: iconSize + 2,
-          color: backgroundColor,
-        })
-      }
-      // Draw the actual icon image
+      // Draw the icon image (ensure PNG has transparent background)
       page.drawImage(icon.image, {
         x: iconX,
         y: iconY,
@@ -886,7 +903,15 @@ function renderFooterCTA(options: FooterCTAOptions): void {
 
     // Add clickable link for social icon
     if (icon.url) {
-      addLinkAnnotation(page, pdfDoc, iconX, iconY, iconSize, iconSize, icon.url)
+      addLinkAnnotation(
+        page,
+        pdfDoc,
+        iconX,
+        iconY,
+        iconSize,
+        iconSize,
+        icon.url,
+      )
     }
   })
 }
@@ -899,7 +924,7 @@ async function addFooterToAllPages(
   pdfDoc: PDFDocument,
   fonts: FontFamily,
   contactInfo: string,
-  companyName?: string
+  companyName?: string,
 ): Promise<void> {
   const pages = pdfDoc.getPages()
   const footerTheme = {
@@ -912,14 +937,14 @@ async function addFooterToAllPages(
   let logoImage: PDFImage | undefined = undefined
   const logoImagePath = path.join(
     process.cwd(),
-    "public/images/TLT-Logo-goldwebsite 2.png"
+    "public/images/TLT-Logo-goldwebsite 2.png",
   )
 
   if (fs.existsSync(logoImagePath)) {
     try {
       const imageBuffer = fs.readFileSync(logoImagePath)
       const base64Image = `data:image/png;base64,${imageBuffer.toString(
-        "base64"
+        "base64",
       )}`
       logoImage = await embedImageInPDF(pdfDoc, base64Image)
     } catch (error) {

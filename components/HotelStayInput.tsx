@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { HotelStay } from '@/lib/types/itinerary';
 import CharacterLimitInput from './CharacterLimitInput';
+import DatePicker from './DatePicker';
 import { fileToBase64, validateImage } from '@/lib/utils/image-utils';
 
 interface HotelStayInputProps {
@@ -19,7 +20,7 @@ export default function HotelStayInput({
   hotels,
   onChange,
   maxHotels = 100, // No practical limit
-  maxImagesPerHotel = 4
+  maxImagesPerHotel = 1
 }: HotelStayInputProps) {
   const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});
 
@@ -180,29 +181,19 @@ export default function HotelStayInput({
                   required
                 />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Check-in Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={hotel.checkIn}
-                    onChange={(e) => handleUpdateHotel(hotelIndex, 'checkIn', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
+                <DatePicker
+                  label="Check-in Date"
+                  value={hotel.checkIn}
+                  onChange={(value) => handleUpdateHotel(hotelIndex, 'checkIn', value)}
+                  required
+                />
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Check-out Date <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="date"
-                    value={hotel.checkOut}
-                    onChange={(e) => handleUpdateHotel(hotelIndex, 'checkOut', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                  />
-                </div>
+                <DatePicker
+                  label="Check-out Date"
+                  value={hotel.checkOut}
+                  onChange={(value) => handleUpdateHotel(hotelIndex, 'checkOut', value)}
+                  required
+                />
 
                 <CharacterLimitInput
                   label="Number of Rooms"
@@ -223,10 +214,10 @@ export default function HotelStayInput({
                 />
               </div>
 
-              {/* Image Gallery */}
+              {/* Hotel Image */}
               <div className="mt-6">
                 <label className="block text-sm font-medium text-gray-700 mb-3">
-                  Hotel Images ({hotel.images.length} / {maxImagesPerHotel})
+                  Hotel Image {hotel.images.length > 0 ? '(1 uploaded)' : '(Optional)'}
                 </label>
 
                 {/* Image Grid */}

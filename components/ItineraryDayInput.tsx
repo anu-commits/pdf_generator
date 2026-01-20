@@ -128,19 +128,17 @@ export default function ItineraryDayInput({
           required={false}
         />
 
-        {/* Activities (shown only if no subheadings) */}
-        {(!day.subheadings || day.subheadings.length === 0) && (
-          <CharacterLimitInput
-            value={day.activities}
-            onChange={handleActivitiesChange}
-            label="Activities & Description"
-            characterLimit={10000}
-            multiline={true}
-            rows={6}
-            placeholder="Describe the day's activities, locations, meals, etc."
-            required={true}
-          />
-        )}
+        {/* Activities - optional when subheadings are used */}
+        <CharacterLimitInput
+          value={day.activities}
+          onChange={handleActivitiesChange}
+          label={`Activities & Description${day.subheadings && day.subheadings.length > 0 ? ' (Optional)' : ''}`}
+          characterLimit={10000}
+          multiline={true}
+          rows={6}
+          placeholder="Describe the day's activities, locations, meals, etc."
+          required={!day.subheadings || day.subheadings.length === 0}
+        />
 
         {/* Subheadings Section */}
         <div className="border-t pt-4 mt-4">

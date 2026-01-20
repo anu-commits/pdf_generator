@@ -11,6 +11,7 @@ import { LUXURY_LAYOUT, LUXURY_COLORS } from "../../config/luxury-design-config"
 
 export interface HeroSectionOptions {
   heroImage?: PDFImage
+  companyLogo?: PDFImage
   companyName?: string
   destination?: string
   duration?: string
@@ -26,7 +27,7 @@ export function renderHeroSection(
   fonts: FontFamily,
   options: HeroSectionOptions
 ): number {
-  const { heroImage, companyName, destination, duration } = options
+  const { heroImage, companyLogo, companyName, destination, duration } = options
 
   const pageWidth = LUXURY_LAYOUT.page.width
   const pageHeight = LUXURY_LAYOUT.page.height
@@ -144,8 +145,21 @@ export function renderHeroSection(
     })
   }
 
-  // Company name (bottom right corner of white box)
-  if (companyName) {
+  // Company logo or name (bottom right corner of white box)
+  if (companyLogo) {
+    // Draw logo image
+    const logoHeight = 25
+    const aspectRatio = companyLogo.width / companyLogo.height
+    const logoWidth = logoHeight * aspectRatio
+
+    page.drawImage(companyLogo, {
+      x: textBoxX + textBoxWidth - logoWidth - textPaddingRight,
+      y: textBoxY + 15,
+      width: logoWidth,
+      height: logoHeight,
+    })
+  } else if (companyName) {
+    // Fallback to text if no logo
     const companyText = companyName.toUpperCase()
     const companySize = 11
     const companyWidth = fonts.bodyBold.widthOfTextAtSize(

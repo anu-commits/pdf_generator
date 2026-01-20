@@ -3,6 +3,7 @@
 import React, { useRef } from 'react';
 import { FlightDetails } from '@/lib/types/itinerary';
 import CharacterLimitInput from './CharacterLimitInput';
+import DatePicker from './DatePicker';
 
 interface FlightInputProps {
   flights: FlightDetails[];
@@ -241,17 +242,12 @@ export default function FlightInput({
                   />
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Date <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        value={flight.departure.date}
-                        onChange={(e) => handleUpdateFlight(index, 'departure.date', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      />
-                    </div>
+                    <DatePicker
+                      label="Date"
+                      value={flight.departure.date}
+                      onChange={(value) => handleUpdateFlight(index, 'departure.date', value)}
+                      required
+                    />
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -281,17 +277,12 @@ export default function FlightInput({
                   />
 
                   <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Date <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        value={flight.arrival.date}
-                        onChange={(e) => handleUpdateFlight(index, 'arrival.date', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      />
-                    </div>
+                    <DatePicker
+                      label="Date"
+                      value={flight.arrival.date}
+                      onChange={(value) => handleUpdateFlight(index, 'arrival.date', value)}
+                      required
+                    />
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">

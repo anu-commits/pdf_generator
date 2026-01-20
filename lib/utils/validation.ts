@@ -57,7 +57,9 @@ export function validateItineraryData(data: ItineraryData): ValidationResult {
   } else {
     data.days.forEach((day, index) => {
       // Title is optional - can be left empty
-      if (!day.activities || day.activities.trim() === '') {
+      // Activities are optional if subheadings are used
+      const hasSubheadings = day.subheadings && day.subheadings.length > 0;
+      if (!hasSubheadings && (!day.activities || day.activities.trim() === '')) {
         errors[`day${index + 1}_activities`] = `Day ${index + 1} activities are required`;
       }
     });
